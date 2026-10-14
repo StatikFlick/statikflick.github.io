@@ -6,7 +6,7 @@
   const status = (id, message, kind = "") => { const el = $(id); el.textContent = message; el.className = "status" + (kind ? " " + kind : ""); };
   const showSession = (signedIn) => { $("loginPanel").classList.toggle("hidden", signedIn); $("adminPanel").classList.toggle("hidden", !signedIn); };
   const invokeAdmin = async (action, extra = {}) => {
-    const { data, error } = await client.functions.invoke("admin-api", { body: { action, ...extra } });
+    const { data, error } = await client.functions.invoke("admin-console-auth", { body: { action, ...extra } });
     if (error) throw error;
     if (!data || data.ok !== true) throw new Error(data?.error || "Request failed");
     return data;
