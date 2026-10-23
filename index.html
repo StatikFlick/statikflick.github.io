@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="Statik.Flick — web developer, chess player, trader and creator.">
+<meta name="color-scheme" content="dark light">
+<title>Statik.Flick</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --glass-blur:16px;--overlay-blur:6px;
+  --bg:#09090a;--surface:rgba(255,255,255,.045);--surface2:rgba(255,255,255,.065);
+  --text:#ffffff;--dim:#c5c2bb;--faint:#8f8b83;
+  --line:rgba(255,255,255,.085);--line2:rgba(255,255,255,.17);
+  --gold:#f0d39a;--gold2:rgba(240,211,154,.28);
+  --shadow:0 24px 80px rgba(0,0,0,.42)
+}
+
+/* Light Theme Variables */
+body.light-theme {
+  --bg: #f4f4f6;
+  --gold:#a8792a;--gold2:rgba(168,121,42,.30);
+  --surface: rgba(0,0,0,.03);
+  --surface2: rgba(0,0,0,.05);
+  --text: #111113;
+  --dim: #55524d;
+  --faint: #77736b;
+  --line: rgba(0,0,0,.08);
+  --line2: rgba(0,0,0,.15);
+  --shadow: 0 24px 60px rgba(0,0,0,.1);
+}
+body.light-theme .cursor-glow { background: radial-gradient(circle,rgba(0,0,0,.06),transparent 68%); }
+body.light-theme .perf-badge, body.light-theme .theme-toggle-badge { background: rgba(240,240,245,.9); color: #111; }
+body.light-theme .float-player { background: rgba(248,248,250,.92); color:#c79c42; }
+body.light-theme .glass{box-shadow:0 8px 28px rgba(0,0,0,.06)}
+body.light-theme .trait-sub,body.light-theme .about-text,body.light-theme .discord-sub{color:#5f5b55}
+body.light-theme .grain { opacity: .015; }
+body.light-theme .chess-btn {
+  background: rgba(0,0,0,.06);
+  border-color: rgba(0,0,0,.15);
+  color: #111113;
+}
+body.light-theme .chess-btn:hover {
+  background: rgba(0,0,0,.1);
+  border-color: #111113;
+}
+
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;background:var(--bg);color:var(--text);font-family:Inter,sans-serif;
+  overflow-x:hidden;line-height:1.5;transition:background .3s ease, color .3s ease;
+}
+button,a{font:inherit}
+button{color:inherit}
+button:focus-visible,a:focus-visible{outline:1px solid var(--gold);outline-offset:3px}
+#particles{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 100% 72% at 50% 0%,transparent 30%,rgba(0,0,0,.68) 100%)}
+body.light-theme .vignette { background: radial-gradient(ellipse 100% 72% at 50% 0%,transparent 30%,rgba(0,0,0,.1) 100%); }
+.cursor-glow{position:fixed;width:460px;height:460px;border-radius:50%;pointer-events:none;z-index:0;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,255,255,.11),transparent 68%);opacity:0;transition:opacity .35s}
+body:hover .cursor-glow{opacity:1}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .cursor-glow{display:none!important}
+}
+.wrap{position:relative;z-index:2;max-width:560px;margin:auto;padding:0 20px 110px}
+
+.hero{min-height:82svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.eyebrow{font:10px 'JetBrains Mono',monospace;letter-spacing:2.5px;text-transform:lowercase;color:var(--dim);display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.eyebrow .dot{width:4px;height:4px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px rgba(209,185,141,.75);animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+.name{font:500 clamp(2rem,8vw,3rem)/1.05 'Playfair Display',serif;letter-spacing:-0.5px;margin-bottom:14px;position:relative;display:inline-block}
+.name span{display:inline-block;position:relative;animation:nameSettle .9s cubic-bezier(.16,1,.3,1) both}
+.name span::after{content:'';position:absolute;inset:-6% -4%;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.58) 48%,rgba(240,211,154,.35) 52%,transparent 65%);transform:translateX(-120%);mix-blend-mode:screen;animation:nameShimmer 3.8s ease-in-out 1.1s infinite}
+.name span.scrambling{font-family:'Playfair Display',serif;font-size:inherit;letter-spacing:inherit;text-shadow:0 0 16px rgba(240,211,154,.18);filter:blur(.15px)}
+.name span.name-settle{animation:nameDecodeSettle .62s cubic-bezier(.16,1,.3,1) both}
+@keyframes nameDecodeSettle{0%{opacity:.72;transform:translateY(2px) scale(.985);filter:blur(3px);letter-spacing:.06em}55%{opacity:1;transform:translateY(-1px) scale(1.012);filter:blur(.35px)}100%{opacity:1;transform:none;filter:blur(0);letter-spacing:inherit}}
+@keyframes nameSettle{0%{opacity:0;transform:translateY(10px) scale(.985);filter:blur(7px)}55%{opacity:1;filter:blur(0)}100%{transform:translateY(0) scale(1);filter:blur(0)}}
+@keyframes nameShimmer{0%,68%,100%{transform:translateX(-120%);opacity:0}78%{opacity:.8}90%{transform:translateX(120%);opacity:0}}
+.role{min-height:20px;font:11px 'JetBrains Mono',monospace;color:var(--dim);letter-spacing:.3px}
+.role span{opacity:0;transition:opacity .45s ease;color:var(--text)}.role span.show{opacity:1}
+
+section{padding:18px 0}
+.label{font:9px 'JetBrains Mono',monospace;letter-spacing:2.5px;text-transform:lowercase;color:var(--faint);margin-bottom:10px}
+
+.glass{
+  background:linear-gradient(145deg,var(--surface),var(--surface2));
+  border:1px solid var(--line);backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+  border-radius:16px;box-shadow:0 8px 35px rgba(0,0,0,.12);
+  transition:transform .35s cubic-bezier(.16,1,.3,1),border-color .25s,background .25s,box-shadow .25s
+}
+.glass:hover{border-color:var(--line2);box-shadow:var(--shadow)}
+@media (min-width:601px){.wrap section{animation:sectionIn .6s cubic-bezier(.16,1,.3,1) both}.wrap section:nth-of-type(2){animation-delay:.04s}.wrap section:nth-of-type(3){animation-delay:.08s}.wrap section:nth-of-type(4){animation-delay:.12s}.wrap section:nth-of-type(5){animation-delay:.16s}}
+@keyframes sectionIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.discord-card{display:flex;align-items:center;gap:12px;padding:15px;text-decoration:none;color:inherit;cursor:pointer}
+.avatar-wrap{position:relative;flex-shrink:0}.avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#181819;border:1px solid var(--line2)}
+.status-dot{position:absolute;right:0;bottom:0;width:12px;height:12px;border:2px solid var(--bg);border-radius:50%;background:#555}
+.discord-name{font-size:13px;font-weight:500;margin-bottom:2px}.discord-sub{font:9px 'JetBrains Mono',monospace;color:var(--dim)}
+.arrow{font:12px 'JetBrains Mono',monospace;color:var(--faint);transition:.3s}.discord-card:hover .arrow{color:var(--gold);transform:translate(3px,-3px)}
+
+.about-card{padding:18px}.about-text{font-size:13px;line-height:1.7;color:var(--dim)}
+
+/* Focus & Skills Cards with cleaner individual accent gradient borders */
+.traits-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.trait-card{padding:14px;position:relative;overflow:hidden}
+.trait-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold2),transparent);opacity:.5}
+.trait-title{font-size:12px;font-weight:600;margin-bottom:4px;color:var(--text)}
+.trait-sub{font:9px 'JetBrains Mono',monospace;color:var(--dim);line-height:1.4}
+
+/* Links Grid - Arrows completely removed and style enhanced */
+.links-grid{display:flex;flex-direction:row;align-items:center;justify-content:center;flex-wrap:nowrap;gap:clamp(18px,5vw,34px);padding:10px 2px 8px}
+.link-card{padding:10px 2px;display:flex;align-items:center;justify-content:flex-start;text-decoration:none;color:inherit;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:0;transition:transform .25s ease,color .25s ease}
+.link-card:hover{transform:translateY(-2px);color:var(--gold)}
+.link-title{font-size:13px;font-weight:500;letter-spacing:.3px}
+
+/* Float Music Trigger & Smooth Visualizer */
+.float-player{
+  position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:60;width:54px;height:54px;
+  border:1px solid var(--line2);border-radius:50%;background:rgba(18,18,20,.85);
+  backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));display:grid;place-items:center;
+  cursor:pointer;color:var(--gold);box-shadow:0 12px 38px rgba(0,0,0,.55);
+  transition:transform .25s,border-color .25s,box-shadow .35s
+}
+.float-player:hover{transform:scale(1.06);border-color:var(--gold)}
+.float-icon{width:100%;height:100%;display:grid;place-items:center;position:relative}
+
+.float-play-icon {width: 20px; height: 20px; fill: currentColor; display: block;}
+.float-player.playing .float-play-icon {display: none;}
+
+.audio-visualizer-bars{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:1.5px;padding:11px 9px;pointer-events:none}
+.float-player:not(.playing) .audio-visualizer-bars{display:none}.float-player.playing .audio-visualizer-bars{display:flex}
+.audio-visualizer-bars span{width:2px;height:5px;min-height:3px;background:linear-gradient(to top,var(--gold),#fff2cf);border-radius:3px;transform-origin:center;opacity:.92;box-shadow:0 0 7px rgba(240,211,154,.22);transition:height .055s cubic-bezier(.2,.8,.2,1),opacity .12s}
+.audio-visualizer-bars span:nth-child(odd){opacity:.82}
+.float-player.playing{box-shadow:0 0 0 1px rgba(240,211,154,.12),0 12px 38px rgba(0,0,0,.55),0 0 30px rgba(240,211,154,.12)}
+
+/* High-detail local-audio visualizer */
+.audio-viz-pro{position:relative;height:126px;margin:10px 0 14px;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:radial-gradient(circle at 50% 52%,rgba(240,211,154,.10),transparent 35%),linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.015));box-shadow:inset 0 0 40px rgba(255,255,255,.018),0 12px 35px rgba(0,0,0,.16)}
+.audio-viz-pro::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(240,211,154,.055),transparent);transform:translateX(-100%);animation:vizSweep 3.8s ease-in-out infinite;pointer-events:none}
+.audio-viz-pro::after{content:'';position:absolute;left:8%;right:8%;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(240,211,154,.12),transparent);box-shadow:0 0 16px rgba(240,211,154,.16);pointer-events:none}
+.viz-orb{position:absolute;left:50%;top:50%;width:38px;height:38px;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(240,211,154,.42);background:radial-gradient(circle at 38% 34%,#fff7df 0 4%,rgba(240,211,154,.55) 10%,rgba(240,211,154,.10) 42%,transparent 70%);box-shadow:0 0 18px rgba(240,211,154,.24),0 0 48px rgba(240,211,154,.10);z-index:2}
+.viz-orb::before,.viz-orb::after{content:'';position:absolute;inset:-9px;border:1px solid rgba(240,211,154,.14);border-radius:50%;animation:orbPulse 1.6s ease-out infinite}
+.viz-orb::after{inset:-18px;opacity:.55;animation-delay:.8s}
+.audio-viz-pro.is-playing .viz-orb{animation:orbBeat .7s ease-in-out infinite alternate}
+.viz-bars{position:absolute;inset:14px 12px;display:flex;align-items:center;justify-content:center;gap:3px;z-index:3}
+.viz-bar{width:3px;height:8px;border-radius:4px;background:linear-gradient(to top,rgba(240,211,154,.28),#f7e7c1);box-shadow:0 0 8px rgba(240,211,154,.18);transform-origin:center;transition:height .06s linear,opacity .1s}
+.audio-viz-pro.is-playing .viz-bar{opacity:.95}
+.viz-bar:nth-child(1),.viz-bar:nth-child(24){height:12px}.viz-bar:nth-child(2),.viz-bar:nth-child(23){height:18px}.viz-bar:nth-child(3),.viz-bar:nth-child(22){height:25px}.viz-bar:nth-child(4),.viz-bar:nth-child(21){height:33px}.viz-bar:nth-child(5),.viz-bar:nth-child(20){height:41px}.viz-bar:nth-child(6),.viz-bar:nth-child(19){height:50px}.viz-bar:nth-child(7),.viz-bar:nth-child(18){height:59px}.viz-bar:nth-child(8),.viz-bar:nth-child(17){height:68px}.viz-bar:nth-child(9),.viz-bar:nth-child(16){height:76px}.viz-bar:nth-child(10),.viz-bar:nth-child(15){height:84px}.viz-bar:nth-child(11),.viz-bar:nth-child(14){height:90px}.viz-bar:nth-child(12),.viz-bar:nth-child(13){height:96px}
+.audio-viz-label{position:absolute;left:12px;top:9px;font:8px 'JetBrains Mono',monospace;letter-spacing:1.6px;text-transform:uppercase;color:var(--faint);z-index:4}.audio-viz-live{position:absolute;right:12px;top:9px;display:flex;align-items:center;gap:5px;font:8px 'JetBrains Mono',monospace;color:var(--faint);z-index:4}.audio-viz-live i{width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:.35}.audio-viz-pro.is-playing .audio-viz-live i{opacity:1;box-shadow:0 0 8px rgba(240,211,154,.8);animation:pulse 1s ease-in-out infinite}
+@keyframes vizSweep{0%,20%{transform:translateX(-100%)}60%,100%{transform:translateX(100%)}}
+@keyframes orbPulse{0%{transform:scale(.82);opacity:.8}100%{transform:scale(1.18);opacity:0}}
+@keyframes orbBeat{from{transform:translate(-50%,-50%) scale(.92)}to{transform:translate(-50%,-50%) scale(1.12)}}
+
+.modal-overlay{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.modal-overlay.open{display:flex}
+
+.modal-close{display:none!important}
+.player-modal{
+  position:relative;isolation:isolate;
+  width:100%;max-width:560px;height:62svh;max-height:min(90svh,850px);min-height:280px;
+  overflow:hidden;padding:24px 18px calc(20px + env(safe-area-inset-bottom));
+  border-radius:24px 24px 0 0;border-bottom:0;transform:translateY(100%);
+  transition:transform .42s cubic-bezier(.16,1,.3,1), height .2s ease;
+  box-shadow:0 -20px 80px rgba(0,0,0,.45);
+  display:flex;flex-direction:column;
+  touch-action: none;
+}
+.modal-overlay.open .player-modal{transform:none}
+
+.modal-drag-bar-area {
+  position: absolute; top: 0; left: 0; right: 0; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: ns-resize; z-index: 105;
+}
+.modal-drag-bar {
+  width: 46px; height: 5px; background: rgba(255,255,255,.30); border-radius: 999px;
+  transition: background .25s ease, width .25s ease, transform .25s ease; box-shadow:0 1px 5px rgba(0,0,0,.12);
+}
+body.light-theme .modal-drag-bar { background: rgba(0,0,0,.25); }
+.modal-drag-bar-area:hover .modal-drag-bar { background: var(--gold); width:54px; }
+.modal-drag-bar-area:active .modal-drag-bar{transform:scaleX(1.06)}
+
+.modal-scroll{
+  min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;flex:1;scrollbar-width:thin;padding-top:10px;
+}
+
+.player-tabs{display:flex;gap:6px;margin-bottom:14px}
+.tab-btn{flex:1;padding:9px;border:1px solid var(--line);border-radius:11px;background:transparent;color:var(--faint);font:10px 'JetBrains Mono',monospace;letter-spacing:.5px;cursor:pointer}
+.tab-btn.active{color:var(--gold);border-color:var(--gold2);background:var(--surface2)}
+.spotify-tab{display:none}.spotify-tab.active{display:block}
+
+/* Playlist / Song Switcher Selector */
+.track-selector{display:flex;flex-direction:column;gap:4px;margin:4px 0 14px}
+.track-option-btn{width:100%;display:flex;align-items:center;gap:11px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:11px 10px;color:var(--text);cursor:pointer;font:600 12px Inter,sans-serif;transition:color .2s ease,transform .2s ease,border-color .2s ease}
+.track-option-btn::before{content:'▶';width:22px;height:22px;border:1px solid var(--line2);border-radius:50%;display:grid;place-items:center;font-size:8px;color:var(--faint);flex:0 0 22px}
+.track-option-btn:hover{color:var(--text);transform:translateX(3px)}
+.track-option-btn.active{color:var(--gold);border-color:var(--gold2);background:linear-gradient(90deg,rgba(240,211,154,.10),transparent);box-shadow:inset 2px 0 0 var(--gold)}
+.track-option-btn.active::before{border-color:var(--gold2);color:var(--gold);background:rgba(240,211,154,.08)}
+
+/* Perfect Centered Play Button Layout Fix */
+.player-row{display:flex;align-items:center;gap:14px;margin-top:12px;min-width:0;overflow:visible}.player-row .play-btn{flex:0 0 52px}.player-row .player-info{min-width:0;overflow:visible}
+.play-btn{
+  width:52px;height:52px;flex:0 0 52px;border-radius:50%;
+  border:1px solid var(--line2);background:var(--surface2);
+  display:grid;place-items:center;cursor:pointer;color:var(--text);
+  margin:0;transition:all .2s ease;
+}
+.play-btn:hover{border-color:var(--gold);color:var(--gold);transform:scale(1.04)}
+.play-btn svg{width:22px;height:22px;display:block}
+.player-info{min-width:0;flex:1}
+.track-name{font-size:13px;font-weight:600;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.progress-bar{height:5px;background:var(--surface2);border-radius:6px;cursor:pointer;overflow:hidden}.progress-fill{height:100%;width:0;background:var(--gold);border-radius:inherit}
+.time-row{display:flex;justify-content:space-between;margin-top:6px;color:var(--faint);font:9px 'JetBrains Mono',monospace}
+
+.spotify-profile{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.spotify-avatar-img{width:38px;height:38px;border-radius:50%;object-fit:cover;background:#181819;border:1px solid var(--line2)}
+.spotify-name{font-size:12px;font-weight:500}.spotify-link{font:9px 'JetBrains Mono',monospace;color:var(--dim);text-decoration:none}
+.spotify-link:hover{color:var(--gold)}
+.spotify-profile-main{min-width:0;flex:1}
+.spotify-now{font:8px 'JetBrains Mono',monospace;color:var(--faint);margin-top:3px}
+
+.spotify-tools{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.stack-toggle{border:1px solid var(--line);background:transparent;color:var(--faint);border-radius:9px;padding:6px 11px;font:9px 'JetBrains Mono',monospace;cursor:pointer;transition:all .25s ease}.stack-toggle:hover,.stack-toggle[aria-pressed='true']{border-color:var(--gold2);color:var(--gold);background:var(--surface2)}
+.playlist-stack.is-stacked{gap:0;padding:8px 10px 18px 4px;position:relative;overflow:visible}
+.playlist-stack.is-stacked .playlist-card{margin-top:-112px;transform:translateX(0) scale(.985);box-shadow:0 10px 26px rgba(0,0,0,.18);transition:transform .32s ease,box-shadow .32s ease,margin-top .32s ease;position:relative}
+.playlist-stack.is-stacked .playlist-card:first-child{margin-top:0;transform:translateX(0) scale(1);z-index:6}
+.playlist-stack.is-stacked .playlist-card:nth-child(2){transform:translateX(7px) scale(.99);z-index:5}
+.playlist-stack.is-stacked .playlist-card:nth-child(3){transform:translateX(2px) scale(.985);z-index:4}
+.playlist-stack.is-stacked .playlist-card:nth-child(4){transform:translateX(8px) scale(.98);z-index:3}
+.playlist-stack.is-stacked .playlist-card:nth-child(5){transform:translateX(3px) scale(.975);z-index:2}
+.playlist-stack.is-stacked .playlist-card:nth-child(6){transform:translateX(9px) scale(.97);z-index:1}
+.playlist-stack:not(.is-stacked) .playlist-card{margin-top:0;transform:none;transition:transform .32s ease,box-shadow .32s ease,margin-top .32s ease}
+.playlist-stack.is-stacked .playlist-card:hover{transform:translateX(12px) scale(1.005);z-index:10}
+@media (max-width:600px){.playlist-stack.is-stacked .playlist-card{margin-top:-118px}.playlist-stack.is-stacked .playlist-card:first-child{margin-top:0}}
+.expand-btn{background:transparent;border:1px solid var(--line);padding:4px 9px;border-radius:8px;color:var(--gold);font:9px 'JetBrains Mono',monospace;cursor:pointer}
+.expand-btn:hover{border-color:var(--gold2)}
+
+.playlist-stack{
+  display:flex;flex-direction:column;gap:12px;max-height:none;overflow:visible;padding-right:2px;
+  transition:max-height .35s ease, gap .35s ease;
+}
+.spotify-tab.expanded .playlist-stack{
+  max-height:950px;gap:18px;overflow-y:auto;
+}
+.playlist-card{border:1px solid var(--line);border-radius:12px;padding:4px;background:var(--surface);overflow:hidden}
+.spotify-embed-container{position:relative;width:100%;min-height:152px}
+.spotify-embed-container iframe{width:100%;height:152px;border:0;border-radius:10px;background:transparent}
+
+.spotify-tab.expanded .spotify-embed-container,
+.spotify-tab.expanded .spotify-embed-container iframe {
+  min-height: 352px;
+  height: 352px;
+}
+
+/* Premium social icons — clean, bold brand marks with no outer boxes */
+.link-left{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-icon-svg{width:24px;height:24px;display:block;flex:0 0 24px;color:var(--gold);overflow:visible}
+.telegram-svg{transform:rotate(-10deg);transform-origin:50% 50%}
+.instagram-svg{stroke-width:2.9}.telegram-svg,.facebook-svg,.github-svg,.x-svg{filter:drop-shadow(0 0 4px rgba(240,211,154,.12))}
+body.light-theme .brand-icon-svg{color:#7d5b24}
+.arrow{display:none!important}
+.link-card::after{display:none!important}
+.trait-card:nth-child(1),.trait-card:nth-child(2),.trait-card:nth-child(3),.trait-card:nth-child(4),.trait-card:nth-child(5),.trait-card:nth-child(6){--trait-accent:var(--gold)}
+.trait-card::after{background:linear-gradient(90deg,var(--trait-accent),transparent);height:2px;opacity:.75}
+.chess-identity{display:flex;align-items:center;gap:10px}.chess-avatar{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(240,211,154,.22),rgba(240,211,154,.06));border:1px solid var(--gold2);color:var(--gold);font-size:21px;box-shadow:0 8px 22px rgba(240,211,154,.08)}
+.chess-rating{transition:transform .2s ease,border-color .2s ease}.chess-rating:hover{transform:translateY(-2px);border-color:var(--gold2)}
+.chess-accounts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:stretch}.chess-accounts-grid .chess-card{min-width:0;margin:0}.chess-accounts-grid .chess-title{font-size:15px}.chess-account-kicker{font:9px 'JetBrains Mono',monospace;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold);margin:0 0 10px}.chess-account-note{font:9px/1.55 'JetBrains Mono',monospace;color:var(--dim);margin-top:8px}.chess-accounts-grid .chess-ratings{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.chess-accounts-grid .chess-rating{padding:10px 5px}.chess-accounts-grid .chess-rating strong{font-size:16px}@media(max-width:560px){.chess-accounts-grid{grid-template-columns:1fr;gap:12px}}
+.track-selector{align-items:center}.track-note{font:8px 'JetBrains Mono',monospace;color:var(--faint);padding-left:2px}
+.play-btn{position:relative;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.play-btn::before{content:'';position:absolute;inset:-5px;border:1px solid transparent;border-radius:50%;pointer-events:none}
+.play-btn.is-playing::before{border-color:var(--gold2);animation:playRing 1.8s ease-in-out infinite}
+@keyframes playRing{0%,100%{transform:scale(.96);opacity:.35}50%{transform:scale(1.06);opacity:1}}
+.play-btn.is-playing{color:var(--gold);border-color:var(--gold2)}
+.spotify-visual{display:none!important}
+.spotify-vinyl{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle,#f0d39a 0 4px,#171717 4.5px 7px,#0a0a0a 7.5px 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 4px 15px rgba(0,0,0,.22)}
+.spotify-visual.is-playing .spotify-vinyl{animation:vinylSpin 2.2s linear infinite}.spotify-eq{display:flex;align-items:center;gap:2px;height:24px}.spotify-eq i{display:block;width:3px;height:7px;border-radius:3px;background:var(--gold)}.spotify-visual.is-playing .spotify-eq i{animation:eq 650ms ease-in-out infinite alternate}.spotify-visual.is-playing .spotify-eq i:nth-child(2){animation-delay:-.18s}.spotify-visual.is-playing .spotify-eq i:nth-child(3){animation-delay:-.32s}.spotify-visual.is-playing .spotify-eq i:nth-child(4){animation-delay:-.1s}.spotify-visual.is-playing .spotify-eq i:nth-child(5){animation-delay:-.25s}
+@keyframes vinylSpin{to{transform:rotate(360deg)}}@keyframes eq{from{height:5px}to{height:21px}}
+.spotify-network{display:none!important}
+.spotify-tab .playlist-card{transition:border-color .2s ease,box-shadow .2s ease}
+.spotify-tab .playlist-card iframe{display:block;width:100%;height:352px;min-height:352px;border:0;border-radius:10px;background:transparent}
+body.light-theme .spotify-vinyl{background:radial-gradient(circle,#d3ad63 0 4px,#f0f0f2 4.5px 7px,#c9c9cc 7.5px 100%)}
+body.light-theme .github-icon,body.light-theme .x-icon{background:#111}
+@media(max-width:600px){.hero{min-height:76svh}.wrap{padding-left:14px;padding-right:14px}.spotify-visual{width:70px}.spotify-network{margin-bottom:8px}.glass{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}}
+
+.press-effect{transition:transform .15s ease,opacity .15s ease}
+.press-effect:active{transform:scale(.96);opacity:.85}
+
+footer{text-align:center;padding-top:24px;color:var(--faint);font:9px 'JetBrains Mono',monospace;letter-spacing:1px}
+
+/* Top-Left Controls — compact row after quality controls were removed */
+.perf-badges-container {
+  position:fixed;top:10px;left:10px;z-index:120;
+  display:flex;flex-direction:row;align-items:center;gap:6px;
+}
+.perf-badge{
+  padding:6px 10px;border:1px solid var(--line2);
+  border-radius:10px;background:rgba(10,10,10,.8);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  font:9px/1.25 'JetBrains Mono',monospace;letter-spacing:.3px;
+  color:#fff;cursor:pointer;user-select:none;
+  box-shadow:0 8px 24px rgba(0,0,0,.22);
+  transition:border-color .2s ease;
+}
+.perf-badge:hover{border-color:var(--gold2)}
+.perf-badge b{color:var(--gold)}
+
+.theme-toggle-badge {
+  padding:5px 7px;border:1px solid var(--line2);
+  border-radius:12px;background:rgba(10,10,10,.8);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  display:flex;align-items:center;gap:5px;
+  font:8px/1.15 'JetBrains Mono',monospace;letter-spacing:.25px;
+  color:var(--gold);cursor:pointer;user-select:none;
+  box-shadow:0 8px 24px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.045);
+  transition:border-color .2s ease,transform .2s ease,background .2s ease;
+}
+.theme-toggle-badge:hover{border-color:var(--gold2);transform:translateY(-1px)}
+.theme-icon{width:14px;height:14px;display:grid;place-items:center;flex:0 0 14px;color:currentColor}
+.theme-icon svg{width:14px;height:14px;display:block;fill:currentColor}
+.theme-sun svg{overflow:visible}
+.theme-sun svg path{stroke:currentColor;stroke-width:2.45;stroke-linecap:round}
+.theme-divider{opacity:.42;margin:0 3px}
+.theme-label{font-weight:600}
+
+
+
+/* Enhanced Chess Card Styling */
+.chess-card{display:grid;gap:14px;padding:18px;position:relative}
+.chess-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold2),transparent)}
+.chess-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.chess-title{font-size:15px;font-weight:650;color:var(--text);letter-spacing:.2px}
+.chess-sub{font:9px 'JetBrains Mono',monospace;color:var(--faint);margin-top:3px}
+.chess-live{display:inline-flex;align-items:center;gap:6px;font:9px 'JetBrains Mono',monospace;color:var(--dim);text-transform:uppercase}
+.chess-live-dot{width:6px;height:6px;border-radius:50%;background:#3ba55d;animation:chessPulse 1.8s infinite}
+@keyframes chessPulse{0%,100%{box-shadow:0 0 0 0 rgba(59,165,93,.28)}50%{box-shadow:0 0 0 6px rgba(59,165,93,0)}}
+.chess-ratings{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.chess-rating{border:1px solid var(--line);border-radius:12px;padding:12px 10px;background:var(--surface);text-align:center}
+.chess-rating span{display:block;font:9px 'JetBrains Mono',monospace;color:var(--faint);margin-bottom:6px;text-transform:uppercase}
+.chess-rating strong{font-size:18px;color:var(--text);font-weight:700}
+.chess-status{font:9px 'JetBrains Mono',monospace;color:var(--faint);min-height:12px}
+.chess-actions{display:flex;gap:8px}
+.chess-btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--gold2);background:rgba(240,211,154,.07);color:var(--gold);border-radius:999px;padding:8px 14px;text-decoration:none;font:10px 'JetBrains Mono',monospace;transition:all .2s ease}
+
+/* ===== Signature visual system ===== */
+.scroll-progress{position:fixed;left:0;top:0;width:100%;height:2px;z-index:200;pointer-events:none;background:linear-gradient(90deg,var(--gold),#fff,var(--gold));transform:scaleX(0);transform-origin:left center;box-shadow:0 0 12px rgba(240,211,154,.45)}
+.hero{position:relative;overflow:hidden}
+.hero-halo{position:absolute;width:min(72vw,390px);height:min(72vw,390px);border-radius:50%;background:radial-gradient(circle,rgba(240,211,154,.12),rgba(240,211,154,.035) 35%,transparent 70%);filter:blur(2px);pointer-events:none;animation:heroBreath 5s ease-in-out infinite}
+.hero-orbit{position:absolute;border:1px solid rgba(240,211,154,.08);border-radius:50%;pointer-events:none;opacity:.8}
+.orbit-a{width:min(88vw,470px);height:min(88vw,470px);animation:orbitSpin 24s linear infinite}.orbit-b{width:min(62vw,330px);height:min(62vw,330px);border-style:dashed;animation:orbitSpin 17s linear infinite reverse;opacity:.45}
+.hero::after{display:none}
+@keyframes heroBreath{0%,100%{transform:scale(.92);opacity:.7}50%{transform:scale(1.08);opacity:1}}@keyframes orbitSpin{to{transform:rotate(360deg)}}
+section{position:relative}section>.label{display:flex;align-items:center;gap:8px}section>.label::before{display:none!important}
+.about-card,.chess-card{position:relative}.about-card::before,.chess-card::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.035),transparent 35%,transparent 65%,rgba(240,211,154,.025))}
+.trait-card{transition:transform .3s cubic-bezier(.16,1,.3,1),border-color .25s,box-shadow .25s}.trait-card:hover{transform:translateY(-3px)}.trait-card::before{display:none}
+
+.chess-rating{position:relative;overflow:hidden}.chess-rating::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 25%,rgba(240,211,154,.08),transparent 55%);transform:translateX(-120%);transition:transform .7s ease}.chess-rating:hover::after{transform:translateX(120%)}
+.track-meta{display:flex;align-items:center;gap:5px;margin-bottom:3px;font:7px 'JetBrains Mono',monospace;letter-spacing:1.4px;text-transform:uppercase;color:var(--faint)}.track-live-dot{width:4px;height:4px;border-radius:50%;background:var(--track-accent,var(--gold));opacity:.5}.track-meta.is-playing .track-live-dot{opacity:1;box-shadow:0 0 8px var(--track-accent,var(--gold));animation:pulse 1s infinite}
+.audio-viz-pro{background:radial-gradient(circle at 50% 52%,rgba(240,211,154,.10),transparent 36%),linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.012))}.viz-bar{background:linear-gradient(to top,var(--gold),#fff8e8)!important}
+.viz-orb-ring{position:absolute;left:50%;top:50%;border:1px solid rgba(240,211,154,.22);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;opacity:.4}.ring-1{width:58px;height:58px}.ring-2{width:82px;height:82px;border-style:dashed;opacity:.18}.audio-viz-pro.is-playing .ring-1{animation:ringPulse 1.2s ease-out infinite}.audio-viz-pro.is-playing .ring-2{animation:ringPulse 1.8s ease-out infinite .2s}@keyframes ringPulse{0%{transform:translate(-50%,-50%) scale(.82);opacity:.5}100%{transform:translate(-50%,-50%) scale(1.22);opacity:0}}
+.play-btn{background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.1),var(--surface2) 65%)}.play-btn.is-playing{box-shadow:0 0 0 1px var(--gold2),0 0 26px color-mix(in srgb,var(--track-accent,var(--gold)) 18%,transparent)}
+.float-player{color:var(--gold)}.float-player.playing{border-color:var(--gold2)}
+.spotify-visual.is-playing .spotify-vinyl{box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 0 22px rgba(240,211,154,.25)}
+@media(max-width:600px){.hero-halo{width:78vw;height:78vw}.orbit-a{width:92vw;height:92vw}.orbit-b{width:68vw;height:68vw}.audio-viz-pro{height:118px}.wrap{padding-bottom:100px}}
+@media(prefers-reduced-motion:reduce){.hero-halo,.hero-orbit{animation:none}.link-card::after{display:none}.name span,.name span::after{animation:none!important}.name span.scrambling{font-family:inherit;font-size:inherit;letter-spacing:inherit;text-shadow:none}}
+
+
+/* V7 — conservative V4-style motion polish */
+:root{--motion-ease:cubic-bezier(.16,1,.3,1)}
+.glass{position:relative;overflow:hidden}
+.glass::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 0%,rgba(255,255,255,.045) 45%,transparent 62%);transform:translateX(-120%);transition:transform 1.1s var(--motion-ease)}
+.glass:hover::after{transform:translateX(120%)}
+.hero{animation:heroFloat 7s ease-in-out infinite}
+@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.section,.label,.glass{will-change:transform}
+section{animation:sectionSettle .75s var(--motion-ease) both}
+section:nth-of-type(2){animation-delay:.04s} section:nth-of-type(3){animation-delay:.08s} section:nth-of-type(4){animation-delay:.12s} section:nth-of-type(5){animation-delay:.16s}
+@keyframes sectionSettle{from{opacity:.82;transform:translateY(8px)}to{opacity:1;transform:none}}
+.link-card,.trait-card,.skill-card,.playlist-card{transition:transform .28s var(--motion-ease),border-color .28s ease,background .28s ease,box-shadow .28s ease}
+.link-card:hover,.trait-card:hover,.skill-card:hover{transform:translateY(-3px)}
+.discord-card:hover{transform:translateY(-2px)}
+@media(prefers-reduced-motion:reduce){.hero,section{animation:none!important}.glass::after{display:none}.link-card,.trait-card,.skill-card,.playlist-card{transition:none!important}}
+
+
+/* ===== V7 ANGELIC × DEMONIC ATMOSPHERE ===== */
+:root{--heaven-glow:rgba(255,248,225,.18);--heaven-line:rgba(255,255,255,.22);--hell-glow:rgba(122,24,35,.18);--hell-line:rgba(190,92,92,.16)}
+body{transition:background .65s ease,color .45s ease}
+body.light-theme{
+  --bg:#f7f5ef;--surface:rgba(255,255,255,.48);--surface2:rgba(255,255,255,.68);
+  --text:#171615;--dim:#615d55;--faint:#898278;--line:rgba(70,62,48,.10);--line2:rgba(70,62,48,.18);
+  --gold:#b78a42;--gold2:rgba(183,138,66,.28);
+}
+/* Atmosphere layers stay subtle: cinematic, not neon. */
+.v7-atmosphere{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;opacity:1;transition:opacity .7s ease}
+.v7-atmosphere::before{content:"";position:absolute;inset:-20%;background:radial-gradient(ellipse at 50% 4%,rgba(255,244,208,.14),transparent 38%),radial-gradient(ellipse at 18% 42%,rgba(255,255,255,.07),transparent 32%);filter:blur(12px);animation:heavenDrift 13s ease-in-out infinite}
+.v7-atmosphere::after{content:"";position:absolute;inset:-15%;background:radial-gradient(ellipse at 52% 12%,rgba(92,9,20,.12),transparent 40%),radial-gradient(ellipse at 82% 65%,rgba(128,26,36,.07),transparent 34%);opacity:0;filter:blur(18px);animation:hellDrift 11s ease-in-out infinite}
+body.light-theme .v7-atmosphere::after{opacity:0}
+body:not(.light-theme) .v7-atmosphere::before{opacity:.15}
+body:not(.light-theme) .v7-atmosphere::after{opacity:1}
+@keyframes heavenDrift{0%,100%{transform:translate3d(-1%,0,0) scale(1)}50%{transform:translate3d(2%,1%,0) scale(1.04)}}
+@keyframes hellDrift{0%,100%{transform:translate3d(1%,-1%,0) scale(1)}50%{transform:translate3d(-2%,2%,0) scale(1.05)}}
+/* Soft rays in light mode */
+body.light-theme .hero::before{content:"";position:absolute;top:-18%;left:50%;width:180px;height:135%;transform:translateX(-50%) rotate(10deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.17),transparent);filter:blur(16px);opacity:.65;pointer-events:none;animation:rayMove 9s ease-in-out infinite}
+@keyframes rayMove{0%,100%{transform:translateX(-58%) rotate(10deg);opacity:.35}50%{transform:translateX(-42%) rotate(10deg);opacity:.7}}
+/* Dark mode: restrained eclipse / ember aura */
+body:not(.light-theme) .hero-halo{background:radial-gradient(circle,rgba(118,21,31,.16),rgba(240,211,154,.035) 34%,transparent 70%);box-shadow:0 0 90px rgba(92,10,22,.08)}
+body:not(.light-theme) .hero-orbit{border-color:rgba(169,75,79,.11)}
+body:not(.light-theme) .hero-orbit.orbit-b{border-color:rgba(240,211,154,.07)}
+/* Light mode: halo becomes a quiet celestial aura */
+body.light-theme .hero-halo{background:radial-gradient(circle,rgba(255,248,221,.72),rgba(236,207,147,.16) 34%,transparent 70%);filter:blur(4px)}
+body.light-theme .hero-orbit{border-color:rgba(183,138,66,.12)}
+/* A few soft particles, never a RGB field */
+body:not(.light-theme) #particles{filter:drop-shadow(0 0 2px rgba(160,42,51,.08))}
+body.light-theme #particles{opacity:.78}
+/* Glass gets atmosphere, structure remains V4 */
+body.light-theme .glass{background:linear-gradient(145deg,rgba(255,255,255,.62),rgba(255,255,255,.38));border-color:rgba(90,75,48,.11);box-shadow:0 10px 36px rgba(83,69,43,.08),inset 0 1px 0 rgba(255,255,255,.72)}
+body:not(.light-theme) .glass{background:linear-gradient(145deg,rgba(255,255,255,.047),rgba(255,255,255,.025))}
+body:not(.light-theme) .glass:hover{box-shadow:0 24px 70px rgba(0,0,0,.42),0 0 34px rgba(112,23,33,.055)}
+body.light-theme .glass:hover{box-shadow:0 20px 52px rgba(84,69,40,.12),0 0 30px rgba(213,178,105,.08)}
+/* Theme switch itself changes its symbol subtly */
+body.light-theme .theme-toggle-badge{color:#8e6b32}
+body:not(.light-theme) .theme-toggle-badge{color:#d9c6a0}
+/* Music panel follows the atmosphere without changing its clean layout */
+body.light-theme .audio-viz-pro{background:radial-gradient(circle at 50% 52%,rgba(212,176,94,.13),transparent 36%),linear-gradient(145deg,rgba(255,255,255,.64),rgba(255,255,255,.28));box-shadow:inset 0 0 40px rgba(255,255,255,.35),0 12px 35px rgba(88,72,42,.08)}
+body:not(.light-theme) .audio-viz-pro{background:radial-gradient(circle at 50% 52%,rgba(112,21,31,.13),transparent 36%),linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.012))}
+body:not(.light-theme) .viz-orb{background:radial-gradient(circle at 38% 34%,#fff7df 0 4%,rgba(185,74,78,.58) 10%,rgba(105,20,30,.14) 42%,transparent 70%);border-color:rgba(190,92,92,.38)}
+body:not(.light-theme) .viz-bar{background:linear-gradient(to top,rgba(143,37,46,.5),#f1ddba)!important}
+body.light-theme .viz-bar{background:linear-gradient(to top,rgba(183,138,66,.3),#fffdf5)!important}
+/* Keep motion elegant and disable atmosphere when reduced motion is requested */
+@media(prefers-reduced-motion:reduce){.v7-atmosphere::before,.v7-atmosphere::after,body.light-theme .hero::before{animation:none!important}.v7-atmosphere{display:none}}
+
+
+/* ===== CLASSIC iOS POLISH ===== */
+.theme-toggle-badge{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:0;width:auto;font-weight:600}
+.theme-icon{width:14px;height:14px;display:grid;place-items:center;flex:0 0 14px}
+.theme-icon svg{width:14px;height:14px;fill:currentColor;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.sun-icon svg circle{fill:currentColor;stroke:none}.sun-icon svg path{fill:none}
+body.light-theme .moon-icon{display:none}.moon-icon{display:grid}.sun-icon{display:none}body.light-theme .sun-icon{display:grid}
+body.light-theme .theme-toggle-badge{color:#7d5b24;background:rgba(255,255,255,.72)}
+body:not(.light-theme) .theme-toggle-badge{color:#f1d8a6}
+.avatar-wrap{width:46px;height:46px;border-radius:50%;overflow:visible;display:grid;place-items:center}
+.avatar{width:46px!important;height:46px!important;border-radius:50%!important;object-fit:cover;display:block;aspect-ratio:1/1;border:1.5px solid var(--line2);box-shadow:0 4px 18px rgba(0,0,0,.16)}
+.status-dot{right:-1px;bottom:-1px}
+.chess-identity{gap:0}
+.chess-avatar{display:none}
+
+/* Soft floating particle field: visible, glowing and premium — no connecting lines. */
+#particles{opacity:1}
+body.light-theme #particles{opacity:.86}
+.molecule-glow{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.9}
+@media(max-width:600px){#particles{opacity:.98}.molecule-glow{opacity:.86}}
+
+/* Restore the name animation with a deliberate iOS-style reveal. */
+.name{position:relative;display:inline-block;min-width:9ch}
+.name::after{content:'';position:absolute;right:-8px;top:12%;width:1px;height:76%;background:var(--gold);opacity:0;animation:caretBlink .8s ease-in-out 1.2s 5}
+@keyframes caretBlink{0%,45%{opacity:0}50%,100%{opacity:.75}}
+@media(prefers-reduced-motion:reduce){.name::after{display:none}}
+
+
+
+
+/* Consistent mobile rhythm across narrow screens */
+@media(max-width:600px){
+  .wrap{width:100%;max-width:560px;padding-left:clamp(16px,4.5vw,22px);padding-right:clamp(16px,4.5vw,22px);padding-bottom:96px}
+  .hero{min-height:78svh;padding:0 4px}
+  section{padding:15px 0}
+  .label{font-size:8px;letter-spacing:2px;margin-bottom:8px}
+  .about-text{font-size:12px;line-height:1.65}
+  .trait-title{font-size:11px}.trait-sub{font-size:8px}
+  .links-grid{gap:clamp(14px,5.2vw,24px)!important}
+  .theme-toggle-badge{padding:4px 6px;gap:4px;font-size:7px;border-radius:9px}
+  .theme-icon,.theme-icon svg{width:13px!important;height:13px!important;flex-basis:13px}
+  .player-modal{padding-left:14px;padding-right:14px}
+  .track-option-btn{font-size:12px;padding:12px 10px;min-height:46px}
+}
+@media(max-width:360px){
+  .wrap{padding-left:13px;padding-right:13px}.traits-grid{gap:7px}.trait-card{padding:12px}
+  .links-grid{gap:11px!important}.links-grid .social-icon-link{width:32px!important;height:32px!important;flex-basis:32px!important}
+  .name{font-size:1.9rem}
+}
+</style>
+
+
+<style>
+/* V24 — unify the floating player with the OLED/iOS/Pinterest visual language without changing the 5-bar visualizer behavior. */
+.float-player{
+  width:56px!important;height:56px!important;
+  right:max(16px,env(safe-area-inset-right))!important;
+  bottom:max(18px,env(safe-area-inset-bottom))!important;
+  border-radius:50%!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  background:linear-gradient(145deg,rgba(34,34,36,.96),rgba(7,7,8,.98))!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.72),inset 0 1px 0 rgba(255,255,255,.07)!important;
+  backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;
+  overflow:hidden!important;isolation:isolate!important;
+}
+.float-player:hover{transform:scale(1.045)!important;border-color:rgba(255,255,255,.22)!important}
+.float-player:active{transform:scale(.96)!important}
+.float-icon{
+  inset:0!important;width:100%!important;height:100%!important;
+  display:grid!important;place-items:center!important;
+}
+.float-play-icon{
+  left:50%!important;top:50%!important;
+  width:18px!important;height:18px!important;
+  transform:translate(-58%,-50%)!important;
+  color:#f5f5f7!important;fill:currentColor!important;
+  filter:drop-shadow(0 1px 5px rgba(255,255,255,.10));
+}
+/* Keep the visualizer exactly 5 bars; only its container styling is harmonized. */
+.audio-visualizer-bars{
+  inset:7px!important;padding:5px 7px!important;gap:4px!important;
+  align-items:center!important;justify-content:center!important;
+  overflow:hidden!important;border-radius:50%!important;
+}
+.audio-visualizer-bars span{
+  width:3px!important;min-width:3px!important;height:5px;
+  border-radius:999px!important;background:#f5f5f7!important;
+  box-shadow:0 0 8px rgba(255,255,255,.16)!important;
+  opacity:.78;flex:0 0 3px!important;
+  transform-origin:center!important;
+}
+.float-player.playing{
+  border-color:rgba(255,255,255,.20)!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.76),0 0 22px rgba(255,255,255,.055),inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+body.light-theme .float-player{
+  background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(242,242,247,.96))!important;
+  border-color:rgba(0,0,0,.11)!important;
+  box-shadow:0 10px 26px rgba(0,0,0,.13),inset 0 1px 0 rgba(255,255,255,.85)!important;
+}
+body.light-theme .float-play-icon{color:#111113!important}
+body.light-theme .audio-visualizer-bars span{background:#111113!important;box-shadow:0 0 7px rgba(0,0,0,.12)!important}
+@media(max-width:600px){.float-player{width:54px!important;height:54px!important;right:max(14px,env(safe-area-inset-right))!important;bottom:max(16px,env(safe-area-inset-bottom))!important}.float-play-icon{width:17px!important;height:17px!important}.audio-visualizer-bars{inset:9px!important;gap:4px!important}}
+</style>
+
+
+<style id="v34-control-fix">
+.perf-badges-container,.perf-badge{display:none!important}
+.theme-control-wrap{position:fixed;top:10px;left:10px;z-index:120;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.theme-control-wrap .theme-toggle-badge{position:static!important;margin:0!important}
+.quality-status{display:flex;align-items:center;gap:4px;padding:3px 7px;border:1px solid var(--line2);border-radius:999px;background:rgba(255,255,255,.58);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font:7px/1.15 'JetBrains Mono',monospace;letter-spacing:.2px;color:var(--faint);box-shadow:0 4px 14px rgba(0,0,0,.08);white-space:nowrap}
+.quality-status b{color:var(--text);font-weight:700}
+body:not(.light-theme) .quality-status{background:rgba(10,10,10,.72);border-color:var(--line2)}
+body:not(.light-theme) .quality-status b{color:var(--text)}
+.links-grid .pinterest-svg{width:25px!important;height:25px!important;flex:0 0 25px!important;overflow:visible!important}
+@media(max-width:520px){.theme-control-wrap{top:8px;left:8px}.quality-status{font-size:6.5px;padding:3px 6px}.links-grid .pinterest-svg{width:23px!important;height:23px!important;flex-basis:23px!important}}
+</style>
+</head>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+<body class="light-theme">
+<canvas id="particles"></canvas>
+<div class="ambient-particles" id="ambientParticles" aria-hidden="true"></div>
+<div class="grain"></div><div class="vignette"></div><div class="v7-atmosphere" aria-hidden="true"></div><div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- Top-Left Theme Switcher + fixed quality status -->
+<div class="theme-control-wrap">
+  <button class="theme-toggle-badge press-effect" id="themeToggleBtn" type="button" title="Switch Theme" aria-label="Switch between dark and light theme">
+    <span class="theme-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M20.7 15.1A8.7 8.7 0 0 1 8.9 3.3a8.7 8.7 0 1 0 11.8 11.8Z"/></svg>
+    </span>
+    <span class="theme-label">Dark</span>
+    <span class="theme-divider">/</span>
+    <span class="theme-icon theme-sun" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="4.8"/>
+        <path d="M12 1.8v2.35M12 19.85v2.35M22.2 12h-2.35M4.15 12H1.8M19.21 4.79l-1.66 1.66M6.45 17.55l-1.66 1.66M19.21 19.21l-1.66-1.66M6.45 6.45L4.79 4.79" fill="none" stroke="currentColor" stroke-width="2.45" stroke-linecap="round"/>
+      </svg>
+    </span>
+    <span class="theme-label">Light</span>
+  </button>
+  <div class="quality-status" aria-label="Website quality and refresh rate">
+    <b id="perfFps">144Hz</b><span>•</span><span id="perfThemeName">8K Resolution</span>
+  </div>
+</div>
+  <main class="wrap">
+  <header class="hero">
+    <div class="hero-halo" aria-hidden="true"></div>
+    <div class="hero-orbit orbit-a" aria-hidden="true"></div><div class="hero-orbit orbit-b" aria-hidden="true"></div>
+    <div class="eyebrow"><span class="dot"></span>welcome</div>
+    <h1 class="name"><span id="typedName">Statik.Flick</span></h1>
+    <div class="role"><span id="roleText" class="show">web developer</span></div>
+  </header>
+
+  <section>
+    <div class="label">discord status</div>
+    <a class="glass discord-card press-effect" href="https://discord.com/users/1074655922921676811" target="_blank" rel="noopener">
+      <div class="avatar-wrap">
+        <img class="avatar" id="discordAvatar" alt="Statik.Flick" src="https://github.com/StatikFlick.png?size=128" onerror="this.onerror=null;this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+        <div class="status-dot" id="statusDot"></div>
+      </div>
+      <div style="flex:1">
+        <div class="discord-name" id="discordName">Statik.Flick</div>
+        <div class="discord-sub" id="discordSub">@handle</div>
+      </div>
+      <div class="arrow">↗</div>
+    </a>
+  </section>
+
+  <section>
+    <div class="label">about</div>
+    <div class="glass about-card">
+      <p class="about-text">Hey! I'm Statik.Flick — a multi-disciplinary creator operating at the intersection of software, hardware, finance, and creative arts. I don't just work with tech; I understand it inside out — from building web apps in Python & JavaScript and analyzing security with Kali Linux, to diagnosing and repairing mobile hardware at the component level. Outside the tech world, I navigate financial markets (Crypto/Forex), master tactical thinking through Competitive Chess, maintain peak physical discipline, and express my vision through Digital Art, Modeling, and Original Music. Driven by curiosity, built on discipline.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">focus & skills</div>
+    <div class="traits-grid">
+      <div class="glass trait-card"><div class="trait-title">Development</div><div class="trait-sub">Python • JavaScript • Web Apps • Creative Coding</div></div>
+      <div class="glass trait-card"><div class="trait-title">Cybersecurity</div><div class="trait-sub">Kali Linux • Security Learning</div></div>
+      <div class="glass trait-card"><div class="trait-title">Hardware &amp; Tech</div><div class="trait-sub">Smartphone Repair • Hardware Diagnostics • Component Level Repair • Mobile Troubleshooting</div></div>
+      <div class="glass trait-card"><div class="trait-title">Finance</div><div class="trait-sub">Crypto • Forex Trading</div></div>
+      <div class="glass trait-card"><div class="trait-title">Strategy</div><div class="trait-sub">Competitive Chess • Analysis</div></div>
+      <div class="glass trait-card"><div class="trait-title">Creative</div><div class="trait-sub">Singing • Modeling • Drawing • Digital Art • Song Creation</div></div>
+      <div class="glass trait-card"><div class="trait-title">Art &amp; Music</div><div class="trait-sub">Drawing • Digital Art • Songwriting • Music Creation</div></div>
+      <div class="glass trait-card"><div class="trait-title">Fitness</div><div class="trait-sub">Discipline • Physical Training</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">Chess Accounts &amp; Ratings</div>
+    <div class="chess-accounts-grid">
+      <div class="glass chess-card">
+        <div class="chess-account-kicker">Account 01</div>
+        <div class="chess-top">
+          <div class="chess-identity"><div><div class="chess-title">Chess.com</div><div class="chess-sub">RulerOfLowerWarground</div></div></div>
+          <div class="chess-live"><i class="chess-live-dot"></i><span>live</span></div>
+        </div>
+        <div class="chess-ratings">
+          <div class="chess-rating"><span>Rapid</span><strong id="chessRapid">—</strong></div>
+          <div class="chess-rating"><span>Blitz</span><strong id="chessBlitz">—</strong></div>
+          <div class="chess-rating"><span>Bullet</span><strong id="chessBullet">—</strong></div>
+        </div>
+        <div class="chess-status" id="chessStatus">Loading latest ratings…</div>
+        <div class="chess-actions"><a class="chess-btn press-effect" href="https://www.chess.com/member/RulerOfLowerWarground" target="_blank" rel="noopener">View Chess.com profile ↗</a></div>
+      </div>
+      <div class="glass chess-card">
+        <div class="chess-account-kicker">Account 02</div>
+        <div class="chess-top">
+          <div class="chess-identity"><div><div class="chess-title">World Chess</div><div class="chess-sub">WorldChess.com • profile 1325404</div></div></div>
+          <div class="chess-live"><i class="chess-live-dot"></i><span>profile</span></div>
+        </div>
+        <div class="chess-ratings">
+          <div class="chess-rating"><span>Rapid</span><strong id="worldRapid">—</strong></div>
+          <div class="chess-rating"><span>Blitz</span><strong id="worldBlitz">—</strong></div>
+          <div class="chess-rating"><span>Bullet</span><strong id="worldBullet">—</strong></div>
+        </div>
+        <div class="chess-status" id="worldChessStatus">Open your profile to see current ratings.</div>
+        <div class="chess-account-note">World Chess does not expose a documented public ratings API for a standalone HTML page, so these values are not fabricated or shown as live data.</div>
+        <div class="chess-actions"><a class="chess-btn press-effect" href="https://worldchess.com/profile/1325404" target="_blank" rel="noopener">View World Chess profile ↗</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">links</div>
+    <div class="links-grid">
+      <a class="link-card social-icon-link" href="https://github.com/StatikFlick" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">
+        <svg class="brand-icon-svg github-svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .7a11.3 11.3 0 0 0-3.57 22.02c.56.1.77-.24.77-.54v-2.1c-3.13.68-3.79-1.33-3.79-1.33-.5-1.28-1.22-1.62-1.22-1.62-1-.69.08-.68.08-.68 1.1.08 1.68 1.13 1.68 1.13.99 1.68 2.6 1.2 3.23.92.1-.72.39-1.2.7-1.48-2.5-.29-5.13-1.25-5.13-5.57 0-1.23.44-2.23 1.15-3.02-.12-.28-.5-1.43.11-2.98 0 0 .94-.3 3.1 1.15a10.8 10.8 0 0 1 5.64 0c2.16-1.45 3.1-1.15 3.1-1.15.61 1.55.23 2.7.11 2.98.71.79 1.15 1.79 1.15 3.02 0 4.33-2.63 5.27-5.14 5.55.4.35.75 1.03.75 2.08v3.08c0 .3.2.65.78.54A11.3 11.3 0 0 0 12 .7Z"/></svg>
+      </a>
+      <a class="link-card social-icon-link" href="https://youtube.com/@statikflick" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube">
+        <svg class="brand-icon-svg youtube-svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4L15.8 12l-6.2 3.6Z"/></svg>
+      </a>
+      <a class="link-card social-icon-link" href="https://www.linkedin.com/in/md-abu-afreed-mandal-350039440/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
+        <svg class="brand-icon-svg linkedin-svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5.2 3.2a2.1 2.1 0 1 1 0 4.2 2.1 2.1 0 0 1 0-4.2ZM3.4 9h3.7v11.8H3.4V9Zm6 0h3.5v1.6h.1c.5-.9 1.7-1.9 3.5-1.9 3.7 0 4.4 2.4 4.4 5.5v6.6h-3.7v-5.9c0-1.4 0-3.2-2-3.2s-2.3 1.5-2.3 3.1v6H9.4V9Z"/></svg>
+      </a>
+      <a class="link-card social-icon-link" href="https://www.instagram.com/i.m.afreed" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">
+        <svg class="brand-icon-svg instagram-svg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.1" fill="none" stroke="currentColor" stroke-width="2.65"/><circle cx="12" cy="12" r="4.05" fill="none" stroke="currentColor" stroke-width="2.65"/><circle cx="17.25" cy="6.75" r="1.35" fill="currentColor"/></svg>
+      </a>
+      <a class="link-card social-icon-link telegram-link" href="https://t.me/statikflick" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram">
+        <svg class="brand-icon-svg telegram-svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="m21.4 4.1-3.2 15.1c-.24 1.07-.87 1.34-1.77.83l-4.88-3.6-2.35 2.27c-.26.26-.48.48-.98.48l.35-4.97 9.04-8.17c.39-.35-.09-.55-.6-.2L6.07 12.6l-4.73-1.48c-1.03-.32-1.05-1.03.22-1.53L20.04 2.9c.86-.32 1.61.2 1.36 1.2Z"/></svg>
+      </a>
+      <a class="link-card social-icon-link" href="https://www.facebook.com/MistikCattitude" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook">
+        <svg class="brand-icon-svg facebook-svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14.1 21v-8h2.7l.4-3.1h-3.1v-2c0-.9.25-1.5 1.55-1.5h1.65V3.62c-.29-.04-1.29-.12-2.45-.12-2.43 0-4.1 1.48-4.1 4.2v2.2H8v3.1h2.75v8h3.35Z"/></svg>
+      </a>
+      <a class="link-card social-icon-link" href="https://x.com/StatikFlick" target="_blank" rel="noopener" aria-label="X" title="X">
+        <svg class="brand-icon-svg x-svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-6.77 7.74L23.2 22h-6.24l-4.89-6.34L6.52 22H3.4l7.25-8.29L2.8 2h6.4l4.42 5.8L18.9 2Zm-1.1 17.7h1.73L8.28 4.17H6.42L17.8 19.7Z"/></svg>
+      </a>
+      <a class="link-card social-icon-link pinterest-icon-link" href="https://pin.it/3zgA4YDLB" target="_blank" rel="noopener" aria-label="Pinterest" title="Pinterest">
+        <svg class="brand-icon-svg pinterest-svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.429 7.627 11.176-.105-.949-.2-2.406.042-3.442.219-.936 1.407-5.962 1.407-5.962s-.359-.72-.359-1.782c0-1.67.967-2.918 2.171-2.918 1.024 0 1.518.77 1.518 1.69 0 1.03-.656 2.569-.994 3.995-.283 1.195.6 2.17 1.777 2.17 2.132 0 3.772-2.248 3.772-5.491 0-2.872-2.064-4.881-5.012-4.881-3.413 0-5.418 2.56-5.418 5.203 0 1.03.397 2.136.892 2.737.098.118.112.221.083.341l-.33 1.343c-.053.216-.174.262-.402.158-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.401 2.966 7.401 6.931 0 4.137-2.608 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.042-1.002 2.348-1.492 3.143A12.002 12.002 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0Z"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- Float Player Trigger with 5 center-weighted visualizer bars -->
+  <button class="float-player press-effect" id="playerTrigger" type="button" aria-label="Open music player">
+    <span class="float-icon" id="floatIcon">
+      <svg class="float-play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+      <div class="audio-visualizer-bars" id="floatVisualizerBars" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </span>
+  </button>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="glass player-modal" id="playerModal" role="dialog" aria-modal="true" aria-label="Music player">
+      <!-- Drag Bar -->
+      <div class="modal-drag-bar-area" id="modalDragBarArea" title="Drag to resize or swipe down to close">
+        <div class="modal-drag-bar" id="modalDragBar"></div>
+      </div>
+      
+      <div class="modal-scroll" id="modalScroll">
+        <div class="player-tabs">
+          <button class="tab-btn press-effect active" data-tab="theme" type="button">theme songs</button>
+          <button class="tab-btn press-effect" data-tab="spotify" type="button">spotify</button>
+        </div>
+
+        <div id="themeTab">
+          <div class="player-row">
+            <button class="play-btn press-effect" id="btnPlay" type="button" aria-label="Play selected song">
+              <span id="playBtnIcon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span>
+            </button>
+            <div class="player-info">
+              <div class="track-meta"><span class="track-live-dot"></span><span id="trackState">ready</span></div><div class="track-name" id="trackTitle">Adhoora Sa Hoon</div>
+              <div class="progress-bar" id="progressBar" aria-label="Seek"><div class="progress-fill" id="progressFill"></div></div>
+              <div class="time-row"><span id="curTime">0:00</span><span id="durTime">0:00</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spotify-tab" id="spotifyTab">
+          <div class="spotify-profile">
+            <img class="spotify-avatar-img" id="spotifyAvatar" alt="Statik.Flick" src="https://github.com/StatikFlick.png?size=128">
+            <div class="spotify-profile-main">
+              <div class="spotify-name">Statik.Flick</div>
+              <a class="spotify-link" href="https://open.spotify.com/user/31q4wnco5dmls5hsdgufu5wjgua4" target="_blank" rel="noopener">open profile ↗</a>
+              <div class="spotify-now" id="spotifyNow">Spotify idle</div>
+            </div>
+          </div>
+          <div class="spotify-tools" aria-label="Playlist layout controls">
+            <span class="track-note">playlist layout</span>
+            <button class="stack-toggle" id="stackToggle" type="button" aria-pressed="false">Stack</button>
+          </div>
+          <div class="playlist-stack" id="playlistStack">
+            <div class="playlist-card"><iframe src="https://open.spotify.com/embed/playlist/28Uf8nSzzk1tGlFgGiDB1M?utm_source=generator&theme=0" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title="Spotify playlist 1"></iframe></div>
+            <div class="playlist-card"><iframe src="https://open.spotify.com/embed/playlist/2YNR549KgybuThIqJTiIvW?utm_source=generator&theme=0" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title="Spotify playlist 2"></iframe></div>
+            <div class="playlist-card"><iframe src="https://open.spotify.com/embed/playlist/2LHjM7oUUUP8FkpiSH1VkW?utm_source=generator&theme=0" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title="Spotify playlist 3"></iframe></div>
+            <div class="playlist-card"><iframe src="https://open.spotify.com/embed/playlist/62tGPmnbGWeKmeNDHsV7jO?utm_source=generator&theme=0" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title="Spotify playlist 4"></iframe></div>
+            <div class="playlist-card"><iframe src="https://open.spotify.com/embed/playlist/30okxJP5OJht92w56Nwb6I?utm_source=generator&theme=0" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title="Hyper DNA playlist"></iframe></div>
+            <div class="playlist-card"><iframe src="https://open.spotify.com/embed/playlist/7JMYQZicAfUYRFt5XLObF3?utm_source=generator&theme=0" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title="Bengali songs playlist"></iframe></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <audio id="audio" preload="metadata" src="assets/adhoora-sa-hoon.mp3"></audio>
+
+  <footer>statik.flick — since 2026</footer>
+</main>
+
+<script>
+const typedEl = document.getElementById('typedName');
+const fullName = 'Statik.Flick';
+const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_<>/\\[]{}';
+let nameTimer = null;
+function scramble() {
+  if (!typedEl) return;
+  clearInterval(nameTimer);
+  let frame = 0;
+  const total = fullName.length * 3 + 18;
+  typedEl.classList.add('scrambling');
+  nameTimer = setInterval(() => {
+    let out = '';
+    for (let i = 0; i < fullName.length; i++) {
+      if (fullName[i] === '.') { out += '.'; continue; }
+      const revealAt = i * 3 + 8;
+      out += frame >= revealAt ? fullName[i] : chars[Math.floor(Math.random() * chars.length)];
+    }
+    typedEl.textContent = out;
+    frame++;
+    if (frame > total) {
+      typedEl.textContent = fullName;
+      typedEl.classList.remove('scrambling');
+      typedEl.classList.remove('name-settle');
+      void typedEl.offsetWidth;
+      typedEl.classList.add('name-settle');
+      setTimeout(() => typedEl.classList.remove('name-settle'), 700);
+      clearInterval(nameTimer);
+    }
+  }, 48);
+}
+setTimeout(scramble, 500);
+// A very subtle re-code effect keeps the name feeling alive without becoming flashy.
+setInterval(() => {
+  if (document.visibilityState === 'visible' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) scramble();
+}, 12000);
+
+const selectedRefresh = 144;
+const selectedRes = '8K';
+const isAutoMode = false;
+const isLowEndDevice = false;
+
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W = innerWidth, H = innerHeight;
+
+function resizeCanvas() {
+  W = innerWidth; H = innerHeight;
+  const maxScale = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ? 1.25 : 1.5;
+  const renderScale = Math.min(window.devicePixelRatio || 1, maxScale) * 1.35;
+  const maxPixels = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ? 2_400_000 : 5_500_000;
+  const pixels = W * H * renderScale * renderScale;
+  const finalScale = pixels > maxPixels ? Math.sqrt(maxPixels / Math.max(1, W * H)) : renderScale;
+  canvas.width = Math.max(1, Math.floor(W * finalScale));
+  canvas.height = Math.max(1, Math.floor(H * finalScale));
+  ctx.setTransform(finalScale, 0, 0, finalScale, 0, 0);
+}
+resizeCanvas();
+addEventListener('resize', resizeCanvas);
+
+function getParticleCount() {
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return 20;
+  if (selectedRefresh <= 60) return 126;
+  if (selectedRefresh <= 90) return 174;
+  if (selectedRefresh <= 120) return 222;
+  return 270;
+}
+
+function makeParticle(){
+  // V13-style soft particles for the top-to-bottom stream, plus V19-style
+  // depth-aware particles rising from below. Keep both streams varied in size.
+  const upward = Math.random() < 0.30; // upward stream gets a clear presence
+  const far = Math.random() < .34;
+  const big = Math.random() < .14;
+  const depth = far ? Math.random()*.48+.18 : Math.random()*.55+.45;
+  const radius = (big ? Math.random()*1.15+1.35 : Math.random()*1.35+.65) * depth;
+  const speed = (Math.random()*.55+.10) * (far ? .78 : 1);
+  return {
+    x:Math.random()*(W+90)-45,
+    y:upward ? H + Math.random()*(H*.55) + 24 : Math.random()*H,
+    r:radius,
+    vy:upward ? speed : -speed,
+    vx:(Math.random()-.5)*.34,
+    a:(Math.random()*.30+.48)*depth,
+    depth, upward, phase:Math.random()*Math.PI*2
+  };
+}
+let particles = Array.from({length:getParticleCount()}, makeParticle);
+function updateParticleArray(){
+  const n=getParticleCount();
+  particles=particles.slice(0,n);
+  while(particles.length<n) particles.push(makeParticle());
+}
+
+let lastTime=0,particleRAF=0,fpsSamples=[],governorLast=performance.now(),governorCooldown=0;
+let pageHidden=document.visibilityState==='hidden';
+function applyAutoGovernor() { }
+function particleFrame(timestamp){
+  if(pageHidden){particleRAF=0;return;}
+  const interval=1000/60;
+  if(timestamp-lastTime<interval-1){particleRAF=requestAnimationFrame(particleFrame);return;}
+  const dt=lastTime?Math.min(2.2,(timestamp-lastTime)/16.67):1;
+  if(lastTime){const fps=1000/Math.max(1,timestamp-lastTime);fpsSamples.push(fps);if(fpsSamples.length>30)fpsSamples.shift();
+    if(timestamp-governorLast>2200&&fpsSamples.length>=10){applyAutoGovernor(timestamp,fpsSamples.reduce((a,b)=>a+b,0)/fpsSamples.length);governorLast=timestamp;fpsSamples=[];}}
+  lastTime=timestamp;
+  ctx.clearRect(0,0,W,H);
+  const light=document.body.classList.contains('light-theme');
+  // Only soft floating/glowing dots — no connecting lines or network web.
+  for(const p of particles){
+    p.phase += 0.022 * dt;
+    const driftX = Math.sin(p.phase * 0.72 + p.y * 0.006) * 0.24;
+    const driftY = Math.cos(p.phase * 0.55 + p.x * 0.004) * 0.12;
+    // Downward particles keep the soft V13 motion; upward particles keep the V19
+    // bottom-originating motion. Both wrap cleanly outside the viewport.
+    const direction = p.upward ? -1 : 1;
+    p.y += direction * Math.max(.05, Math.abs(p.vy) + driftY) * dt; p.x += (p.vx + driftX) * dt;
+    if(p.y < -42){p.y = H + 42 + Math.random()*Math.min(220,H*.35); p.x = Math.random()*(W+90)-45;}
+    if(p.y > H + 42){p.y = -42 - Math.random()*Math.min(220,H*.35); p.x = Math.random()*(W+90)-45;}
+    if(p.x < -24)p.x=W+24; if(p.x > W+24)p.x=-24;
+    const tw=.68+.32*Math.sin(p.phase*1.7);
+    const aura=.72+.28*Math.sin(p.phase*0.8+1.4);
+    const alpha=p.a*tw;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r*(.94+.08*aura),0,Math.PI*2);
+    ctx.fillStyle=light?`rgba(10,10,12,${Math.min(.95,alpha*1.08)})`:`rgba(255,255,255,${Math.min(.98,alpha)})`;
+    ctx.shadowBlur=light?5:8;ctx.shadowColor=light?'rgba(0,0,0,.48)':'rgba(255,255,255,.52)';ctx.fill();ctx.beginPath();ctx.arc(p.x,p.y,p.r*2.2,0,Math.PI*2);ctx.fillStyle=light?'rgba(0,0,0,.035)':'rgba(255,255,255,.045)';ctx.shadowBlur=light?8:12;ctx.shadowColor=light?'rgba(0,0,0,.22)':'rgba(255,255,255,.24)';ctx.fill();ctx.shadowBlur=0;
+  }
+  particleRAF=requestAnimationFrame(particleFrame);
+}
+particleRAF=requestAnimationFrame(particleFrame);
+
+window.addEventListener('pageshow',()=>{ pageHidden=false; lastTime=0; if(!particleRAF) particleRAF=requestAnimationFrame(particleFrame); });
+document.addEventListener('visibilitychange', () => {
+  pageHidden = document.visibilityState === 'hidden';
+  if (!pageHidden && !particleRAF) { lastTime = 0; fpsSamples = []; particleRAF = requestAnimationFrame(particleFrame); }
+});
+
+const cursorGlow = document.getElementById('cursorGlow');
+addEventListener('pointermove', e => {
+  if (e.pointerType === 'touch' || selectedRefresh <= 60) return;
+  cursorGlow.style.left = e.clientX + 'px';
+  cursorGlow.style.top = e.clientY + 'px';
+});
+
+const roles = ['web developer', 'python & javascript', 'chess player', 'crypto & forex trader', 'model', 'gym enthusiast'];
+let ri = 0;
+const roleEl = document.getElementById('roleText');
+setInterval(() => {
+  roleEl.classList.remove('show');
+  setTimeout(() => { ri = (ri + 1) % roles.length; roleEl.textContent = roles[ri]; roleEl.classList.add('show'); }, 430);
+}, 3000);
+
+const DEFAULT_AVATAR = 'https://github.com/StatikFlick.png?size=128';
+const discordAvatarEl = document.getElementById('discordAvatar');
+const spotifyAvatarEl = document.getElementById('spotifyAvatar');
+discordAvatarEl.addEventListener('error', () => { discordAvatarEl.src = DEFAULT_AVATAR; });
+spotifyAvatarEl.addEventListener('error', () => { spotifyAvatarEl.src = DEFAULT_AVATAR; });
+
+async function fetchLanyard() {
+  try {
+    const res = await fetch('https://api.lanyard.rest/v1/users/1074655922921676811', { cache:'no-store' });
+    const data = await res.json();
+    if (!data.success) throw new Error('lanyard');
+    const u = data.data.discord_user;
+    const colors = { online: '#3ba55d', idle: '#e6a23c', dnd: '#e04a4a', offline: '#5c5c5c' };
+    document.getElementById('discordName').textContent = u.global_name || u.username || 'Statik.Flick';
+    document.getElementById('discordSub').textContent = '@' + (u.username || 'Statik.Flick');
+    document.getElementById('statusDot').style.background = colors[data.data.discord_status] || colors.offline;
+    if (u.avatar) {
+      const ext = String(u.avatar).startsWith('a_') ? 'gif' : 'png';
+      const url = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${ext}?size=128`;
+      discordAvatarEl.src = url;
+      spotifyAvatarEl.src = url;
+    }
+  } catch (e) {
+    document.getElementById('discordName').textContent = 'Statik.Flick';
+    document.getElementById('discordSub').textContent = '@Statik.Flick';
+    document.getElementById('statusDot').style.background = '#5c5c5c';
+  }
+}
+fetchLanyard();
+setInterval(fetchLanyard, 30000);
+
+const spotifyFrames = [...document.querySelectorAll('.spotify-tab iframe')];
+function setSpotifyVisual(){}
+function pauseAllSpotify(){}
+
+const overlay = document.getElementById('modalOverlay');
+const playerModal = document.getElementById('playerModal');
+const dragArea = document.getElementById('modalDragBarArea');
+
+document.getElementById('playerTrigger').addEventListener('click', () => { overlay.classList.add('open'); document.body.style.overflow='hidden'; });
+const closePlayer = () => { overlay.classList.remove('open'); document.body.style.overflow=''; };
+overlay.addEventListener('click', e => { if (e.target === overlay) closePlayer(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && overlay.classList.contains('open')) closePlayer();
+  if (e.code === 'Space' && overlay.classList.contains('open') && !e.target.matches('input,textarea,button,a')) { e.preventDefault(); btnPlay?.click(); }
+});
+
+let isDragging=false,startY=0,startHeight=0;
+const snapHeights=[35,56,76,94];
+function snapSheet(){
+  const current=(playerModal.getBoundingClientRect().height/innerHeight)*100;
+  const nearest=snapHeights.reduce((a,b)=>Math.abs(b-current)<Math.abs(a-current)?b:a);
+  if(nearest<=35 && current<31){ closePlayer(); playerModal.style.height=''; return; }
+  playerModal.style.height=Math.min(nearest,94)+'svh';
+}
+dragArea.addEventListener('pointerdown',e=>{isDragging=true;startY=e.clientY;startHeight=playerModal.getBoundingClientRect().height;playerModal.style.transition='none';dragArea.setPointerCapture(e.pointerId);e.preventDefault();});
+dragArea.addEventListener('pointermove',e=>{if(!isDragging)return;const delta=startY-e.clientY;const current=Math.max(innerHeight*.28,Math.min(innerHeight*.94,startHeight+delta));playerModal.style.height=current+'px';});
+dragArea.addEventListener('pointerup',e=>{if(!isDragging)return;isDragging=false;playerModal.style.transition='';try{dragArea.releasePointerCapture(e.pointerId)}catch(err){}snapSheet();});
+dragArea.addEventListener('pointercancel',()=>{isDragging=false;playerModal.style.transition='';snapSheet();});
+
+const spotifyTab = document.getElementById('spotifyTab');
+document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const isSpotify = btn.dataset.tab === 'spotify';
+  document.getElementById('themeTab').style.display = isSpotify ? 'none' : 'block';
+  spotifyTab.classList.toggle('active', isSpotify);
+}));
+
+const playlistStack = document.getElementById('playlistStack');
+const stackToggle = document.getElementById('stackToggle');
+if(stackToggle && playlistStack){
+  let stacked = localStorage.getItem('statik_playlist_layout') === 'stacked';
+  const paintStack=()=>{playlistStack.classList.toggle('is-stacked',stacked);stackToggle.setAttribute('aria-pressed',String(stacked));stackToggle.textContent=stacked?'Unstack':'Stack';};
+  stackToggle.addEventListener('click',()=>{stacked=!stacked;localStorage.setItem('statik_playlist_layout',stacked?'stacked':'unstacked');paintStack();}); paintStack();
+}
+
+const audio = document.getElementById('audio');
+let audioCtx=null, analyser=null, audioSourceNode=null, vizData=null, vizRAF=0;
+const vizBars=[...document.querySelectorAll('#floatVisualizerBars span')];
+function ensureAudioAnalyser(){
+  if(analyser)return;
+  try{audioCtx=new (window.AudioContext||window.webkitAudioContext)(); analyser=audioCtx.createAnalyser(); analyser.fftSize=128; analyser.smoothingTimeConstant=.48; vizData=new Uint8Array(analyser.frequencyBinCount); audioSourceNode=audioCtx.createMediaElementSource(audio); audioSourceNode.connect(analyser); analyser.connect(audioCtx.destination);}catch(e){analyser=null;}
+}
+function animateAudioViz(){
+  if(!analyser || audio.paused || audio.ended){vizRAF=0; return;}
+  analyser.getByteFrequencyData(vizData);
+  const n=vizBars.length;
+  if(n===5){
+    const weights=[.38,.68,1,.68,.38];
+    const bands=[3,7,12,7,3];
+    for(let i=0;i<5;i++){
+      const v=vizData[Math.min(vizData.length-1,bands[i])]/255;
+      const energy=Math.pow(v,.60);
+      const micro=.08*Math.sin(performance.now()/155+i*.8);
+      const h=Math.max(4,Math.min(22,4+(energy*.92+micro)*18*weights[i]));
+      const opacity=(.66+Math.min(1,energy+.12)*.30).toFixed(2);
+      vizBars[i].style.height=h.toFixed(1)+'px';
+      vizBars[i].style.opacity=opacity;
+    }
+  }
+  vizRAF=requestAnimationFrame(animateAudioViz);
+}
+function startAudioViz(){ensureAudioAnalyser();try{audioCtx?.resume();}catch(e){} if(!vizRAF)vizRAF=requestAnimationFrame(animateAudioViz);}
+function stopAudioViz(){vizBars.forEach(b=>{b.style.height='5px';b.style.opacity='.72'});}
+
+const trackTitleEl = document.getElementById('trackTitle');
+const btnPlay = document.getElementById('btnPlay');
+const playBtnIcon = document.getElementById('playBtnIcon');
+const fill = document.getElementById('progressFill');
+const progress = document.getElementById('progressBar');
+const cur = document.getElementById('curTime');
+const dur = document.getElementById('durTime');
+const playSVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>';
+const pauseSVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z"></path></svg>';
+const scrollProgress=document.getElementById('scrollProgress');
+function updateScrollProgress(){const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);scrollProgress.style.transform=`scaleX(${Math.min(1,Math.max(0,scrollY/max))})`;}
+addEventListener('scroll',updateScrollProgress,{passive:true});addEventListener('resize',updateScrollProgress,{passive:true});updateScrollProgress();
+function fmt(sec){if(!Number.isFinite(sec)||sec<0)return '0:00';const m=Math.floor(sec/60),s=Math.floor(sec%60).toString().padStart(2,'0');return `${m}:${s}`;}
+
+function syncPlayer(){
+  const on=!audio.paused&&!audio.ended && !!audio.src;
+  const tm=document.querySelector('.track-meta'); const ts=document.getElementById('trackState');
+  if(tm)tm.classList.toggle('is-playing',on);
+  if(ts)ts.textContent=on?'playing now':'ready';
+  playBtnIcon.innerHTML=on?pauseSVG:playSVG;
+  btnPlay.classList.toggle('is-playing',on);
+  document.getElementById('playerTrigger')?.classList.toggle('playing',on);
+}
+btnPlay.addEventListener('click',async()=>{
+  if(audio.paused){try{await audio.play();}catch(e){syncPlayer();}} else audio.pause();
+  syncPlayer();
+});
+
+audio.addEventListener('play',()=>{syncPlayer();updateMediaSession();startAudioViz();});
+audio.addEventListener('playing',()=>{syncPlayer();startAudioViz();});audio.addEventListener('pause',()=>{syncPlayer();stopAudioViz();});
+audio.addEventListener('ended',()=>{syncPlayer();});
+audio.addEventListener('timeupdate',()=>{cur.textContent=fmt(audio.currentTime);if(audio.duration)fill.style.width=((audio.currentTime/audio.duration)*100)+'%';});
+audio.addEventListener('loadedmetadata',()=>{dur.textContent=fmt(audio.duration);});
+let seeking=false;
+function seekFromPointer(e){
+  if(!audio.duration)return;
+  const r=progress.getBoundingClientRect();
+  const ratio=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+  audio.currentTime=ratio*audio.duration;
+  fill.style.width=(ratio*100)+'%';
+  cur.textContent=fmt(audio.currentTime);
+}
+progress.setAttribute('role','slider'); progress.setAttribute('tabindex','0'); progress.setAttribute('aria-valuemin','0'); progress.setAttribute('aria-valuemax','100');
+progress.addEventListener('pointerdown',e=>{seeking=true;try{progress.setPointerCapture(e.pointerId)}catch(err){};seekFromPointer(e);e.preventDefault();});
+progress.addEventListener('pointermove',e=>{if(seeking)seekFromPointer(e);});
+progress.addEventListener('pointerup',e=>{if(!seeking)return;seekFromPointer(e);seeking=false;try{progress.releasePointerCapture(e.pointerId)}catch(err){}});
+progress.addEventListener('pointercancel',()=>{seeking=false;});
+progress.addEventListener('keydown',e=>{if(!audio.duration)return;if(e.key==='ArrowRight'){audio.currentTime=Math.min(audio.duration,audio.currentTime+5);e.preventDefault();}if(e.key==='ArrowLeft'){audio.currentTime=Math.max(0,audio.currentTime-5);e.preventDefault();}});
+progress.addEventListener('click',seekFromPointer);
+
+function updateMediaSession(){
+  if(!('mediaSession' in navigator))return;
+  try{navigator.mediaSession.metadata=new MediaMetadata({title:'Adhoora Sa Hoon',artist:'Statik.Flick',album:'Theme Songs'});}catch(e){}
+}
+if('mediaSession' in navigator){
+  const bind=(action,fn)=>{try{navigator.mediaSession.setActionHandler(action,fn);}catch(e){}};
+  bind('play',()=>audio.play()); bind('pause',()=>audio.pause());
+  bind('seekbackward',()=>{audio.currentTime=Math.max(0,audio.currentTime-10)});
+  bind('seekforward',()=>{audio.currentTime=Math.min(audio.duration||audio.currentTime,audio.currentTime+10)});
+}
+
+// IMPORTANT: do not stop audio when the tab becomes hidden. Mobile browsers can keep
+// the HTMLAudioElement playing in the background. Navigation/OS killing the page is
+// outside a website's control, but we intentionally do not pause on visibility/pagehide.
+
+
+async function loadChessRatings(){
+  const status=document.getElementById('chessStatus');
+  const cells={rapid:document.getElementById('chessRapid'),blitz:document.getElementById('chessBlitz'),bullet:document.getElementById('chessBullet')};
+  try{
+    const res=await fetch('https://api.chess.com/pub/player/RulerOfLowerWarground/stats?ts='+Date.now(),{cache:'no-store',headers:{'Accept':'application/json'}});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    const rating=key=>{ const x=data?.[key]; return x?.last?.rating ?? x?.best?.rating ?? null; };
+    const vals={rapid:rating('chess_rapid'),blitz:rating('chess_blitz'),bullet:rating('chess_bullet')};
+    cells.rapid.textContent=vals.rapid ?? '—'; cells.blitz.textContent=vals.blitz ?? '—'; cells.bullet.textContent=vals.bullet ?? '—';
+    const got=Object.values(vals).some(v=>v!=null);
+    status.textContent=got ? 'Latest public ratings • refreshes every 15s' : 'No public ratings found';
+  }catch(e){
+    status.textContent='Unable to reach Chess.com right now • retrying';
+  }
+}
+
+loadChessRatings();
+setInterval(loadChessRatings,15000);
+
+</script>
+<style>
+.audio-viz-pro,.spotify-network,.spotify-visual,.modal-close{display:none!important}
+.track-selector{display:none!important}
+.links-grid .link-card.glass{background:transparent!important;border:0!important;box-shadow:none!important}
+.links-grid .link-card{border:0!important}
+</style>
+
+<style>
+/* Nothing-style social icons: glyphs only, no app tiles, no arrows, no labels */
+.links-grid{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:clamp(20px,6vw,38px)!important;padding:10px 2px 8px!important;flex-wrap:nowrap!important}
+.links-grid .social-icon-link{width:38px!important;height:38px!important;padding:0!important;display:grid!important;place-items:center!important;flex:0 0 38px!important;background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;color:var(--text)!important;text-decoration:none!important;transform:none!important;opacity:.9}
+.links-grid .social-icon-link:hover{color:var(--gold)!important;transform:translateY(-2px) scale(1.04)!important;background:transparent!important;opacity:1}
+.links-grid .brand-icon-svg{width:28px!important;height:28px!important;flex:0 0 28px!important;color:currentColor!important;filter:drop-shadow(0 1px 4px color-mix(in srgb,var(--gold) 10%,transparent))!important}
+.links-grid .github-svg{width:30px!important;height:30px!important}
+.links-grid .instagram-svg{width:29px!important;height:29px!important}
+.links-grid .telegram-svg{width:29px!important;height:29px!important;transform:rotate(-10deg)!important}
+.links-grid .facebook-svg{width:28px!important;height:28px!important}
+.links-grid .youtube-svg,.links-grid .linkedin-svg{width:28px!important;height:28px!important}
+.links-grid .x-svg{width:28px!important;height:28px!important}
+.links-grid .link-title,.links-grid .arrow{display:none!important}
+.links-grid .social-icon-link::after{display:none!important}
+body.light-theme .links-grid .social-icon-link{color:#050505!important}
+body:not(.light-theme) .links-grid .social-icon-link{color:#f4f1e9!important}
+@media(max-width:520px){.links-grid{gap:clamp(12px,5vw,24px)!important}.links-grid .social-icon-link{width:34px!important;height:34px!important;flex-basis:34px!important}.links-grid .brand-icon-svg{width:26px!important;height:26px!important}.links-grid .github-svg{width:28px!important;height:28px!important}}
+.links-grid .pinterest-svg{width:29px!important;height:29px!important}
+</style>
+
+<style id="statik-v13-polish">
+/* V13 music + social polish */
+.audio-visualizer-bars{gap:3px;padding:10px 10px}
+.audio-visualizer-bars span{width:3px;min-width:3px;height:5px;border-radius:4px;box-shadow:0 0 8px rgba(240,211,154,.20)}
+.audio-visualizer-bars span:nth-child(odd){opacity:.9}
+.links-grid{gap:clamp(9px,3vw,18px)!important;padding:7px 2px 6px!important}
+.links-grid .social-icon-link{width:34px!important;height:34px!important;flex-basis:34px!important}
+.links-grid .brand-icon-svg{width:25px!important;height:25px!important}
+.links-grid .pinterest-social{width:auto!important;min-width:34px!important;padding:0 9px!important;gap:7px!important;display:flex!important;border:1px solid color-mix(in srgb,var(--gold) 35%,transparent)!important;border-radius:999px!important;background:color-mix(in srgb,var(--gold) 8%,transparent)!important;color:var(--gold)!important;box-shadow:0 5px 18px rgba(0,0,0,.10)!important}
+.links-grid .pinterest-social .pinterest-svg{width:21px!important;height:21px!important}
+.links-grid .pinterest-social .pinterest-label{display:inline!important;font-size:10px;font-weight:600;letter-spacing:.2px;line-height:1}
+.links-grid .pinterest-social:hover{background:color-mix(in srgb,var(--gold) 14%,transparent)!important;border-color:var(--gold2)!important}
+@media(max-width:520px){
+  .links-grid{gap:7px!important}
+  .links-grid .social-icon-link{width:31px!important;height:31px!important;flex-basis:31px!important}
+  .links-grid .brand-icon-svg{width:23px!important;height:23px!important}
+  .links-grid .pinterest-social{padding:0 7px!important;gap:5px!important;min-width:31px!important}
+  .links-grid .pinterest-social .pinterest-svg{width:19px!important;height:19px!important}
+  .links-grid .pinterest-social .pinterest-label{font-size:9px}
+}
+</style>
+
+<style id="ios-neutral-final">
+/* ===== FINAL: CLEAN iOS UI / NO ANGELIC-DEMONIC THEME ===== */
+:root{
+  --bg:#05070a;--surface:rgba(28,32,38,.68);--surface2:rgba(44,49,57,.72);
+  --text:#f5f5f7;--dim:#a1a1aa;--faint:#71717a;
+  --line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.16);
+  --gold:#0a84ff;--gold2:rgba(10,132,255,.30);
+}
+body.light-theme{
+  --bg:#f5f5f7;--surface:rgba(255,255,255,.72);--surface2:rgba(242,242,247,.88);
+  --text:#111114;--dim:#636366;--faint:#8e8e93;
+  --line:rgba(0,0,0,.08);--line2:rgba(0,0,0,.14);
+  --gold:#007aff;--gold2:rgba(0,122,255,.24);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.v7-atmosphere,.hero-halo,.hero-orbit{display:none!important}
+.hero::before,.hero::after{display:none!important}
+.grain{opacity:.018!important}
+.vignette{background:radial-gradient(ellipse 110% 75% at 50% 0%,transparent 38%,rgba(0,0,0,.20) 100%)!important}
+body.light-theme .vignette{background:radial-gradient(ellipse 110% 75% at 50% 0%,transparent 48%,rgba(0,0,0,.055) 100%)!important}
+.glass{
+  background:rgba(28,32,38,.60)!important;
+  border:1px solid rgba(255,255,255,.095)!important;
+  border-radius:18px!important;
+  box-shadow:0 12px 34px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.045)!important;
+  backdrop-filter:blur(24px) saturate(135%);-webkit-backdrop-filter:blur(24px) saturate(135%);
+}
+body.light-theme .glass{
+  background:rgba(255,255,255,.68)!important;
+  border-color:rgba(0,0,0,.075)!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)!important;
+}
+.glass:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,0,0,.24)!important}
+body.light-theme .glass:hover{box-shadow:0 14px 36px rgba(0,0,0,.10)!important}
+.trait-card::after,.chess-card::before{background:linear-gradient(90deg,transparent,var(--gold2),transparent)!important}
+.scroll-progress{background:var(--gold)!important;box-shadow:0 0 10px var(--gold2)!important}
+button,a,.link-card,.trait-card,.skill-card,.playlist-card{ -webkit-tap-highlight-color:transparent }
+.link-card:hover,.trait-card:hover,.skill-card:hover{color:var(--gold)}
+.theme-toggle-badge,.perf-badge,.stack-toggle,.chess-btn,.expand-btn{
+  border-radius:999px!important;border-color:var(--line)!important;background:var(--surface2)!important;color:var(--text)!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.theme-toggle-badge:hover,.stack-toggle:hover,.stack-toggle[aria-pressed="true"],.chess-btn:hover,.expand-btn:hover{border-color:var(--gold2)!important;color:var(--gold)!important;background:var(--surface2)!important}
+body.light-theme .theme-toggle-badge{color:#111!important;background:rgba(255,255,255,.82)!important}
+.float-player{background:rgba(28,32,38,.82)!important;border-color:var(--line)!important;color:var(--gold)!important;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+body.light-theme .float-player{background:rgba(255,255,255,.88)!important;color:var(--gold)!important}
+.audio-visualizer-bars span{background:var(--gold)!important;box-shadow:0 0 7px var(--gold2)!important}
+.progress-fill{background:var(--gold)!important}
+.chess-avatar{background:var(--surface2)!important;border-color:var(--line)!important;color:var(--gold)!important}
+.status-dot{box-shadow:0 0 8px rgba(48,209,88,.55)!important}
+/* Keep particles monochrome and subtle; no themed aura. */
+#particles{filter:none!important}
+body.light-theme #particles{opacity:.72!important}
+body:not(.light-theme) #particles{opacity:.55!important}
+/* iOS-like typography rhythm */
+.section-title{letter-spacing:-.025em!important}
+@media(max-width:600px){
+  .glass{border-radius:16px!important}
+  .theme-toggle-badge{padding:5px 8px!important;font-size:9px!important}
+  .stack-toggle{padding:6px 10px!important}
+}
+
+/* V11 motion layer — subtle iOS-style motion, no angel/devil theming */
+:root{--ios-accent:#0a84ff}
+.glass,.link-card,.trait-card,.skill-card,.playlist-card,.discord-card,.about-card{will-change:transform}
+.glass{position:relative;overflow:hidden}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,transparent 20%,rgba(255,255,255,.09) 48%,transparent 72%);transform:translateX(-125%);animation:cardSheen 7s ease-in-out infinite;opacity:.5}
+@keyframes cardSheen{0%,62%,100%{transform:translateX(-125%)}78%{transform:translateX(125%)}}
+.float-player{animation:playerFloat 5s ease-in-out infinite}
+@keyframes playerFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.play-btn{transition:transform .28s cubic-bezier(.16,1,.3,1),box-shadow .28s ease}.play-btn:hover{transform:scale(1.06)}.play-btn:active{transform:scale(.94)}
+.link-card,.trait-card,.skill-card,.playlist-card{transition:transform .4s cubic-bezier(.16,1,.3,1),border-color .25s,box-shadow .35s}
+.link-card:hover,.trait-card:hover,.skill-card:hover,.playlist-card:hover{transform:translateY(-4px)}
+.section-title{animation:titleBreath 4.5s ease-in-out infinite}
+@keyframes titleBreath{0%,100%{opacity:1}50%{opacity:.82}}
+/* extra ambient dots: separate from the main canvas so they remain clearly visible */
+.ambient-particles{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.ambient-particles i{position:absolute;width:3px;height:3px;border-radius:50%;background:currentColor;opacity:0;box-shadow:0 0 10px currentColor,0 0 22px currentColor;animation:ambientRise linear infinite}
+body:not(.light-theme) .ambient-particles{color:#fff}body.light-theme .ambient-particles{color:#111}
+@keyframes ambientRise{0%{opacity:0;transform:translate3d(0,calc(var(--dir)*22vh),0) scale(.65)}12%{opacity:.5}50%{opacity:.8;transform:translate3d(var(--dx),calc(var(--dir)*-18vh),0) scale(1)}88%{opacity:.35}100%{opacity:0;transform:translate3d(calc(var(--dx)*-0.5),calc(var(--dir)*-58vh),0) scale(.45)}}
+/* Scroll reveal is handled by IntersectionObserver; this is the initial state. */
+.motion-reveal{opacity:0;transform:translateY(18px) scale(.985);filter:blur(3px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,1,.3,1),filter .7s ease}
+.motion-reveal.is-visible{opacity:1;transform:none;filter:none}
+@media(prefers-reduced-motion:reduce){.glass::before,.float-player,.section-title,.ambient-particles{animation:none!important}.motion-reveal{opacity:1;transform:none;filter:none;transition:none}}
+
+</style>
+
+<script>
+// V11 motion enhancements: extra floating dots + scroll reveals + gentle card tilt.
+(()=>{
+  const host=document.getElementById('ambientParticles');
+  if(host){
+    const count=0;
+    for(let i=0;i<count;i++){
+      const el=document.createElement('i');
+      el.style.left=(Math.random()*100)+'%';
+      el.style.top=(55+Math.random()*45)+'%';
+      el.style.setProperty('--dx',((Math.random()-.5)*120)+'px');
+      el.style.animationDuration=(7+Math.random()*10)+'s';
+      el.style.animationDelay=(-Math.random()*12)+'s';
+      el.style.width=el.style.height=(Math.random()<.22?4:2.5)+'px';
+      host.appendChild(el);
+    }
+  }
+  const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const targets=document.querySelectorAll('section,.glass,.playlist-card,.trait-card,.skill-card');
+  targets.forEach((el,i)=>{el.classList.add('motion-reveal');el.style.transitionDelay=Math.min(i*35,280)+'ms';});
+  if(reduce){targets.forEach(el=>el.classList.add('is-visible'));return;}
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-visible');io.unobserve(e.target)}}),{threshold:.08,rootMargin:'0px 0px -8% 0px'});
+    targets.forEach(el=>io.observe(el));
+  }else targets.forEach(el=>el.classList.add('is-visible'));
+  if(window.matchMedia?.('(pointer:fine)').matches){
+    document.querySelectorAll('.glass').forEach(card=>{
+      let raf=0;
+      card.addEventListener('pointermove',e=>{
+        const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+        cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{card.style.transform=`perspective(900px) rotateX(${(-y*1.7).toFixed(2)}deg) rotateY(${(x*1.7).toFixed(2)}deg) translateY(-2px)`;});
+      });
+      card.addEventListener('pointerleave',()=>{cancelAnimationFrame(raf);card.style.transform='';});
+    });
+  }
+})();
+</script>
+<script>
+// Neutral iOS mode: remove legacy themed atmosphere nodes at runtime as well.
+(()=>{const kill=()=>document.querySelectorAll('.v7-atmosphere,.hero-halo,.hero-orbit').forEach(el=>el.remove()); if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',kill,{once:true});else kill();})();
+</script>
+
+<style id="statik-v18-final">
+/* V18: true OLED / AMOLED dark + system theme + clean iOS media controls */
+:root{
+  --bg:#000000;--surface:rgba(255,255,255,.045);--surface2:rgba(255,255,255,.072);
+  --text:#f5f5f7;--dim:#a1a1aa;--faint:#71717a;
+  --line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.18);
+  --gold:#0a84ff;--gold2:rgba(10,132,255,.30);
+  --shadow:0 24px 80px rgba(0,0,0,.72)
+}
+body:not(.light-theme){background:#000000!important;color:#f5f5f7}
+body.light-theme{--bg:#f5f5f7;--surface:rgba(255,255,255,.76);--surface2:rgba(242,242,247,.92);--gold:#007aff;--gold2:rgba(0,122,255,.24)}
+body.light-theme{background:#f5f5f7!important}
+
+/* Keep the floating player safely inside the viewport, including display cutouts. */
+.float-player{right:max(16px, env(safe-area-inset-right));bottom:max(18px, env(safe-area-inset-bottom));overflow:hidden;isolation:isolate;background:#09090a!important;border-color:rgba(255,255,255,.18)!important;color:#f5f5f7!important;box-shadow:0 12px 38px rgba(0,0,0,.78)}
+body.light-theme .float-player{background:rgba(248,248,250,.96)!important;color:#111113!important;border-color:rgba(0,0,0,.14)!important}
+.float-icon{inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);border-radius:50%;overflow:hidden}
+.audio-visualizer-bars{
+  inset:9px!important;
+  gap:4px!important;
+  padding:0!important;
+  overflow:visible!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.audio-visualizer-bars span{
+  width:3px!important;
+  min-width:3px!important;
+  height:4px;
+  min-height:4px;
+  max-height:22px;
+  border-radius:999px!important;
+  transform-origin:center center;
+  background:#f5f5f7!important;
+  box-shadow:0 0 5px rgba(255,255,255,.10)!important;
+  flex:0 0 3px!important;
+  transition:height .10s cubic-bezier(.22,1,.36,1),opacity .14s ease,transform .10s ease;
+  will-change:height,opacity;
+}
+body.light-theme .audio-visualizer-bars span{background:#111113!important;box-shadow:0 0 5px rgba(0,0,0,.10)!important}
+
+/* OLED cards: near-black glass, no violet cast. */
+.glass{background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.018));border-color:rgba(255,255,255,.10)}
+body:not(.light-theme) .glass{box-shadow:0 8px 35px rgba(0,0,0,.55)}
+body:not(.light-theme) .glass::before{background:linear-gradient(115deg,transparent 20%,rgba(255,255,255,.055) 48%,transparent 72%)}
+
+.pinterest-card{padding:17px;overflow:hidden;position:relative;background:linear-gradient(145deg,rgba(30,30,32,.96),rgba(6,6,7,.96))!important;border-color:rgba(255,255,255,.12)!important}
+body.light-theme .pinterest-card{background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(246,246,248,.94))!important;border-color:rgba(0,0,0,.08)!important}
+.pinterest-card-main{display:flex;align-items:center;gap:13px;position:relative;z-index:2}
+.pinterest-mark{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;flex:0 0 44px;font:700 23px Georgia,serif;color:#fff;background:linear-gradient(145deg,#e60023,#b4001c);box-shadow:0 9px 24px rgba(230,0,35,.28)}
+.pinterest-copy{min-width:0;flex:1}.pinterest-kicker{font:8px 'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin-bottom:3px}.pinterest-name{font-size:13px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pinterest-sub{font:9px/1.5 'JetBrains Mono',monospace;color:var(--dim);margin-top:3px;max-width:350px}.pinterest-open{flex:0 0 auto;text-decoration:none;color:var(--text);border:1px solid var(--line2);background:rgba(255,255,255,.055);padding:8px 11px;border-radius:999px;font:9px 'JetBrains Mono',monospace;transition:.25s}.pinterest-open:hover{color:#fff;border-color:var(--gold2);background:rgba(10,132,255,.12);transform:translateY(-1px)}
+.pinterest-strip{display:grid;grid-template-columns:1.15fr .8fr 1fr .72fr .9fr;gap:6px;margin-top:14px;height:68px;opacity:.95}.pin-tile{border-radius:10px;min-width:0;border:1px solid rgba(255,255,255,.09);background-size:cover;background-position:center;filter:saturate(.65)}.pin-tile-a{background:linear-gradient(145deg,#35363a,#111214)}.pin-tile-b{background:linear-gradient(145deg,#57595f,#1b1c20)}.pin-tile-c{background:linear-gradient(145deg,#25272b,#090a0c)}.pin-tile-d{background:linear-gradient(145deg,#494b50,#151619)}.pin-tile-e{background:linear-gradient(145deg,#303237,#0d0e10)}
+
+.progress-bar{cursor:pointer;touch-action:none}.progress-bar:focus-visible{outline:1px solid var(--gold);outline-offset:4px}.progress-fill{pointer-events:none}
+
+/* iOS-style segmented control for Theme Songs / Spotify. */
+.player-tabs{display:flex;gap:3px;margin-bottom:14px;padding:3px;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:rgba(255,255,255,.045);box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}
+.tab-btn{flex:1;min-height:36px;padding:8px 10px;border:0;border-radius:15px;background:transparent;color:var(--faint);font:600 10px 'JetBrains Mono',monospace;letter-spacing:.35px;cursor:pointer;transition:background .22s ease,color .22s ease,box-shadow .22s ease,transform .22s ease}
+.tab-btn.active{color:var(--text);background:rgba(255,255,255,.11);box-shadow:0 1px 5px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.045)}
+.tab-btn:active{transform:scale(.985)}
+body.light-theme .player-tabs{background:rgba(0,0,0,.035);border-color:rgba(0,0,0,.08)}
+body.light-theme .tab-btn.active{background:rgba(255,255,255,.96);box-shadow:0 1px 5px rgba(0,0,0,.10),inset 0 0 0 1px rgba(0,0,0,.035);color:#111113}
+
+/* Spotify deck: preserve the stacked/unstacked behavior without edge clipping. */
+.playlist-stack{display:flex;flex-direction:column;gap:14px!important;overflow:visible!important}
+.playlist-stack.is-stacked{display:grid!important;grid-template-columns:1fr!important;gap:0!important;padding:10px 4px 26px!important;min-height:225px;position:relative;overflow:visible!important}
+.playlist-stack.is-stacked .playlist-card{grid-column:1;grid-row:1;margin:0!important;width:100%;height:178px;overflow:hidden;transform:none!important;transition:transform .38s cubic-bezier(.16,1,.3,1),filter .38s,opacity .38s,box-shadow .38s!important;border-radius:16px!important}
+.playlist-stack.is-stacked .playlist-card iframe{display:block;width:100%;height:178px!important;min-height:178px!important;border:0!important;border-radius:14px!important}
+.playlist-stack.is-stacked .playlist-card:nth-child(1){z-index:6;transform:translateY(0) scale(1)!important;opacity:1}
+.playlist-stack.is-stacked .playlist-card:nth-child(2){z-index:5;transform:translateY(10px) scale(.975)!important;opacity:.82}
+.playlist-stack.is-stacked .playlist-card:nth-child(3){z-index:4;transform:translateY(20px) scale(.95)!important;opacity:.68}
+.playlist-stack.is-stacked .playlist-card:nth-child(4){z-index:3;transform:translateY(30px) scale(.925)!important;opacity:.54}
+.playlist-stack.is-stacked .playlist-card:nth-child(5){z-index:2;transform:translateY(40px) scale(.90)!important;opacity:.40}
+.playlist-stack.is-stacked .playlist-card:nth-child(6){z-index:1;transform:translateY(50px) scale(.875)!important;opacity:.28}
+.playlist-stack.is-stacked .playlist-card:hover{transform:translateY(-5px) scale(1.01)!important;z-index:20;opacity:1;filter:none}
+.playlist-stack:not(.is-stacked) .playlist-card{height:auto;overflow:hidden;transform:none!important;opacity:1!important}
+.links-grid{gap:clamp(6px,2vw,12px)!important}
+body:not(.light-theme) .ambient-particles{color:#f5f5f7}.ambient-particles i{box-shadow:0 0 8px currentColor,0 0 18px currentColor}
+
+/* Center-out audio response: the two middle bars react the most, then fall off symmetrically. */
+@media(max-width:600px){.pinterest-card-main{align-items:flex-start}.pinterest-open{padding:7px 9px}.pinterest-sub{font-size:8px}.pinterest-strip{height:54px}.playlist-stack.is-stacked{min-height:205px}.playlist-stack.is-stacked .playlist-card{height:162px}.playlist-stack.is-stacked .playlist-card iframe{height:162px!important;min-height:162px!important}}
+
+/* Final OLED cleanup: neutral monochrome atmosphere in dark mode. */
+body:not(.light-theme) .hero-halo{background:radial-gradient(circle,rgba(255,255,255,.055),rgba(255,255,255,.018) 34%,transparent 70%)!important;box-shadow:0 0 90px rgba(255,255,255,.025)!important}
+body:not(.light-theme) .hero-orbit{border-color:rgba(255,255,255,.055)!important}
+body:not(.light-theme) .about-card::before,body:not(.light-theme) .chess-card::before{background:linear-gradient(120deg,rgba(255,255,255,.035),transparent 35%,transparent 65%,rgba(255,255,255,.018))!important}
+body:not(.light-theme) .trait-card::after{background:linear-gradient(90deg,rgba(255,255,255,.16),transparent)!important}
+body:not(.light-theme) .float-player.playing{box-shadow:0 0 0 1px rgba(255,255,255,.10),0 12px 38px rgba(0,0,0,.82),0 0 26px rgba(255,255,255,.06)!important}
+body:not(.light-theme) .play-btn.is-playing{box-shadow:0 0 0 1px rgba(255,255,255,.13),0 0 26px rgba(255,255,255,.06)!important;border-color:rgba(255,255,255,.18)!important}
+
+</style>
+<style>
+/* V26 — Mini iOS-style five-bar audio visualizer; play control geometry preserved. */
+.float-player{
+  box-sizing:border-box!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+.float-icon{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:grid!important;
+  place-items:center!important;
+  pointer-events:none!important;
+}
+.float-play-icon{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:19px!important;
+  height:19px!important;
+  transform:translate(-58%,-50%)!important;
+  margin:0!important;
+  display:block!important;
+}
+.float-player:not(.playing) .float-play-icon{display:block!important}
+.float-player.playing .float-play-icon{display:none!important}
+
+/* V21 — Focus & Skills bento layout: balanced iOS-style grouping. */
+.traits-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  align-items:stretch;
+}
+.trait-card{
+  min-width:0;
+  min-height:104px;
+  padding:17px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  border-radius:22px;
+}
+.trait-card:nth-child(1){grid-column:1 / -1;min-height:118px}
+.trait-card:nth-child(5){min-height:116px}
+.trait-card:nth-child(6),.trait-card:nth-child(7){min-height:104px}
+.trait-title{font-size:13px;margin-bottom:7px}
+.trait-sub{font-size:9.5px;line-height:1.55}
+@media(max-width:600px){
+  .traits-grid{grid-template-columns:1fr;gap:9px}
+  .trait-card,.trait-card:nth-child(1),.trait-card:nth-child(5),.trait-card:nth-child(6),.trait-card:nth-child(7){grid-column:auto;min-height:0;padding:15px;border-radius:19px}
+  .trait-card:nth-child(1){min-height:104px}
+  .trait-title{font-size:12px;margin-bottom:5px}
+  .trait-sub{font-size:8.5px;line-height:1.5}
+}
+@media(max-width:360px){
+  .traits-grid{gap:8px}
+  .trait-card,.trait-card:nth-child(1),.trait-card:nth-child(5),.trait-card:nth-child(6),.trait-card:nth-child(7){padding:13px}
+}
+
+</style>
+<script>
+// V22: persistent manual quality + system theme + V13/V19 mixed particle field + 5-bar center visualizer + centered play control.
+(()=>{
+  const media=window.matchMedia?.('(prefers-color-scheme: dark)');
+  const applyTheme=()=>{
+    const saved=localStorage.getItem('statik_theme');
+    const useLight=saved!=='dark';
+    document.body.classList.toggle('light-theme',useLight);
+  };
+  applyTheme();
+  const themeBtn=document.getElementById('themeToggleBtn');
+  themeBtn?.addEventListener('click',()=>{
+    const light=!document.body.classList.contains('light-theme');
+    document.body.classList.toggle('light-theme',light);
+    localStorage.setItem('statik_theme',light?'light':'dark');
+  });
+  media?.addEventListener?.('change',()=>{ if(!localStorage.getItem('statik_theme')) applyTheme(); });
+
+  const host=document.getElementById('ambientParticles');
+  host?.querySelectorAll('i').forEach(x=>x.remove());
+  if(host){
+    const count=window.matchMedia?.('(max-width:600px)').matches?42:82;
+    for(let i=0;i<count;i++){
+      const el=document.createElement('i');
+      el.style.left=(Math.random()*110-5)+'%';
+      el.style.top=(72+Math.random()*40)+'%';
+      el.style.setProperty('--dx',((Math.random()-.5)*170)+'px'); el.style.setProperty('--dir',Math.random()<.7?'1':'-1');
+      el.style.animationDuration=(8+Math.random()*13)+'s';
+      el.style.animationDelay=(-Math.random()*16)+'s';
+      const size=Math.random()<.14?4:Math.random()<.48?2.8:2;
+      el.style.width=el.style.height=size+'px';
+      host.appendChild(el);
+    }
+  }
+})();
+</script>
+
+<script id="statik-v19-corrections">(()=>{})();</script>
+
+</body>
+
+</html>
+<style id="v25-player-skills-fix">
+/* V25 — compact skills + keep the song control fully inside the sheet. */
+.player-row{
+  box-sizing:border-box!important;
+  width:100%!important;
+  padding:4px 2px 4px 8px!important;
+  gap:14px!important;
+}
+.player-row .play-btn{
+  box-sizing:border-box!important;
+  flex:0 0 54px!important;
+  width:54px!important;
+  height:54px!important;
+  margin:0!important;
+  position:relative!important;
+  overflow:visible!important;
+}
+.play-btn::before{
+  inset:0!important;
+  border-radius:50%!important;
+}
+.play-btn span{display:grid!important;place-items:center!important;width:100%!important;height:100%!important}
+.play-btn svg{width:21px!important;height:21px!important;transform:translateX(1px)!important}
+.player-row .player-info{min-width:0!important;flex:1 1 auto!important}
+
+/* Focus & Skills: compact equal iOS cards instead of oversized rows. */
+.traits-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+  align-items:stretch!important;
+}
+.trait-card,
+.trait-card:nth-child(1),
+.trait-card:nth-child(5),
+.trait-card:nth-child(6),
+.trait-card:nth-child(7){
+  grid-column:auto!important;
+  min-height:92px!important;
+  height:auto!important;
+  padding:14px!important;
+  border-radius:20px!important;
+  justify-content:center!important;
+}
+.trait-title{font-size:12.5px!important;margin-bottom:6px!important}
+.trait-sub{font-size:9px!important;line-height:1.45!important}
+@media(max-width:600px){
+  .player-row{padding-left:6px!important;gap:12px!important}
+  .player-row .play-btn{flex-basis:52px!important;width:52px!important;height:52px!important}
+  .play-btn svg{width:20px!important;height:20px!important}
+  .traits-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .trait-card,
+  .trait-card:nth-child(1),
+  .trait-card:nth-child(5),
+  .trait-card:nth-child(6),
+  .trait-card:nth-child(7){min-height:88px!important;padding:12px!important;border-radius:18px!important}
+  .trait-title{font-size:11.5px!important;margin-bottom:5px!important}
+  .trait-sub{font-size:8px!important;line-height:1.42!important}
+}
+@media(max-width:390px){
+  .traits-grid{grid-template-columns:1fr!important}
+  .trait-card,
+  .trait-card:nth-child(1),
+  .trait-card:nth-child(5),
+  .trait-card:nth-child(6),
+  .trait-card:nth-child(7){min-height:78px!important}
+}
+</style>
